@@ -26,7 +26,7 @@ router.validarSesion = function (req, res, next) {
 }
 
 router.get('/logout', function (req, res, next) {
-    res.set('Set-Cookie', `session_itsc=; Expires=${new Date(0).toUTCString()}; HttpOnly`);
+    res.clearCookie('session_itsc');
     res.redirect('/login')
 })
 
@@ -79,18 +79,6 @@ router.get('/login/token/:data', function (req, res, next) {
 })
 
 
-router.get('/check', async (req, res, next) => {
-    try {
-        var user = req.params.user || null;
-        var pass = req.params.pass || null;
-    
-        var data = await checkUsuario(user, pass);            
-        res.json(data)        
-    
-    } catch (e) {
-        next(e)
-    }
-})
 
 async function checkUsuario (usuario, clave) {
     var client = await pool.connect()

@@ -37,7 +37,7 @@
             <span class="nav-link-text">Oportunidades</span>
           </a>
         </li>
-
+        <!--
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
           <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti" data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-sitemap"></i>
@@ -69,7 +69,7 @@
             </li>
           </ul>
         </li>
-
+        -->
       </ul>
       <ul class="navbar-nav sidenav-toggler">
         <li class="nav-item">
@@ -90,7 +90,7 @@
         <script>
           function logout() {
             if (confirm("Esta seguro que desea salir?")) {
-              window.location.replace(`/login/`)
+              window.location.replace(`/logout/`)
             }
           }
         </script>
@@ -112,7 +112,7 @@
       </ol>
 
       <div>
-        <table id="example" style="width:100%">
+        <table id="oportunidades" style="width:100%">
         </table>
       </div>
 
@@ -131,49 +131,49 @@
 
     <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
-
-
-
-
-    <!-- <script src="vendor/jquery/jquery.min.js"></script>-->
-     <!--<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>-->
-     <!--<script src="vendor/jquery-easing/jquery.easing.min.js"></script>-->
-
      <script src="js/sb-admin.js"></script>
-     <script> 
-        console.log("Hola mundo");
 
-        async function exec () {
-            console.log("chao mundo");
-            var data = await fetch('/oportunidad', {credentials: "same-origin"})
+    <script>
+        cargarTabla('oportunidades', '/oportunidad')
 
-            if (data.ok)
-                data = await data.json();
-            else
-                throw {status: data.status, statusText: data.statusText};
-    
-            data = data.map(rec => Object.values(rec));
-            console.log(data)
+        async function cargarTabla (id, url) {
+            try {
+                var data = await fetch(url, {credentials: "same-origin"})
 
-            var tabla = $('#example').DataTable({
-                data: data,
-                responsive: true,
-                columns: [
-                    //{ title: "Oportunidad" },
-                    { title: "Fecha Oportunidad" },
-                    { title: "Representante" },
-                    { title: "Cliente" },
-                    { title: "Etapa de Venta" },
-                    //{ title: "Valor" },
-                    //{ title: "Valor ponderado" },
-                    //{ title: "Fecha Cierre" },
-                    //{ title: "Comentario" }
-                    { title: "Descripcion" }
-                ]
-            });
-        }
+                if (data.ok)
+                    data = await data.json();
+                else
+                    throw new Error(`Status: ${data.status}, ${data.statusText}`);
 
-        exec().then().catch(e => console.log(e));
+                document.getElementById(id).innerHTML = `
+                    <thead>
+                        <tr>
+                            ${data.fields.reduce((html, val) => {
+                                return html + `<th> ${val} </th>`;
+                            }, '')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.rows.reduce((html, row) => {
+                            return html + `
+                                <tr> 
+                                    ${data.fields.reduce((htmlr, val) => {
+                                        return htmlr + `
+                                        <td> ${row[val] || ''} </td>`;        
+                                    }, '')} 
+                                </tr>`;
+                        }, '')}
+                    </tbody>
+                `;
+
+                $(`#${id}`).DataTable({ responsive: true })
+
+            } catch (e) {
+                console.log(e);
+                alert(e.message)
+            }
+        } 
+
     </script>
   </div>
 </body>
