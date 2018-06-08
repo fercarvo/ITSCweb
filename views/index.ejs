@@ -157,6 +157,7 @@
 
             var tabla = $('#example').DataTable({
                 data: data,
+                responsive: true,
                 columns: [
                     //{ title: "Oportunidad" },
                     { title: "Fecha Oportunidad" },
@@ -170,10 +171,6 @@
                     { title: "Descripcion" }
                 ]
             });
-
-            new $.fn.dataTable.Responsive( table, {
-                details: true
-            } );
         }
 
         exec().then().catch(e => console.log(e));
