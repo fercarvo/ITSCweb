@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>ITSC S.A Web APPs  </title>
+
+</head>
+
+<body >
+    <!--<form method="post" enctype="multipart/form-data" action="/update" >
+        <table >
+            action
+            <input name="action" value="install" class="ui-state-default ui-corner-all">
+            bundlestart 
+            <input name="bundlestart" value="start" type="text">
+            refreshPackages 
+            <input name="refreshPackages" value="refresh" type="text">
+            bundlestartlevel 
+            <input name="bundlestartlevel" id="bundlestartlevel" value="1" size="4" type="text"></td>
+            bundlefile
+            <input accept="jar|war" name="bundlefile" value="" type="file">    
+            
+            <button type="submit">Enviar</button>
+    </form>-->
+
+
+    <input id="archivo" required type="file">
+    <button onclick="enviar()"> Enviar archivo </button>
+
+
+    <script>
+        var archivo;
+        var filename;
+
+        document.getElementById('archivo').onchange = evt => {
+            var file = evt.target.files[0];
+            filename = file.name
+            var reader = new FileReader();
+            reader.onload = () => {
+                console.log(reader.type, file.name)
+                archivo = new Blob([reader.result], {type: null}, file.name)
+            }
+            reader.readAsText(file);
+        }
+
+
+        async function enviar () {
+            try {
+                var data = new FormData()
+                data.append('action', 'install')
+                data.append('bundlestart', 'start')
+                data.append('refreshPackages', 'refresh')
+                data.append('bundlestartlevel', '1')
+                data.append('bundlefile', archivo, filename)
+
+                var result = await fetch("/update", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Basic ${btoa("SuperUser")}:${btoa("System")}`
+                    },
+                    body: data
+                })
+
+                var resultado = await result.text()
+
+                if (result.ok) {
+                    console.log(resultado)
+                    alert("Subido con exito")
+                } else {
+                    console.log(resultado)
+                    alert("Error")
+                }
+                
+            } catch (e) {
+                console.log("error", e)
+            }
+
+        }
+    </script>
+</body>
+
+</html>

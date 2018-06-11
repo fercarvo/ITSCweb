@@ -8,19 +8,19 @@ router.get('/oportunidad', login.validarSesion, async function (req, res, next) 
         var org = req.session_itsc.ad_org_id;
         var query = `
         select
-            repre.Name as "Representante",
-            cb.Name as Cliente,
+            repre.Name as representante,
+            cb.Name as cliente,
             --org.name as 'Organizacion 2',
             --op.documentno as no_opor,
-            to_char(op.foportunidad, 'dd/MM/yyyy') as "Fecha Oportunidad",
-            op.description as "Descripcion",
+            op.foportunidad as fechaoportunidad,
+            op.description as descripcion,
             --op.C_BPartner_ID as cliente_id,
             --op.SalesRep_ID as repre_id,
-            op.OpportunityAmt::numeric(10,2)::text as "Valor",
-            ss.Name as "Etapa de Venta",
+            op.OpportunityAmt::numeric as valor,
+            ss.Name as etapaventa,
             --trunc((op.OpportunityAmt*op.Probability/100),2)::text as "Valor Ponderado",
-            to_char(op.ExpectedCloseDate, 'dd/MM/yyyy') as "Fecha Cierre",            
-            op.Comments as "Comentario"
+            op.ExpectedCloseDate as fechacierre,            
+            op.Comments as comentario
             --c.Name as campana
         from c_opportunity op
         join C_BPartner cb on cb.C_BPartner_ID=op.C_BPartner_ID and cb.isactive='Y'
