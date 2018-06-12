@@ -16,7 +16,9 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser())
 
-app.use(express.static(`${__dirname}/public`));
+app.use(express.static(`${__dirname}/public`, {
+  maxAge: 1000*60*30
+}))
 
 app.use('/', require('./routes/index'));
 app.use('/', require('./routes/oportunidad'));

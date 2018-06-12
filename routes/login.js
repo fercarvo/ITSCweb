@@ -5,6 +5,11 @@ var cookies = require('cookie-parser');
 const crypto = require('crypto');
 
 
+router.use(function (req, res, next) {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    next();
+})
+
 router.get('/login', function(req, res, next) {
     res.render('login');
 });
