@@ -18,10 +18,15 @@ angular.module('app', ['ui.router'])
         EventBus.addEventListener("newState", cambiar)
 
         function cambiar(evt, data) {
-            console.log("cambiando a ", evt.target, data)
+            $state.go('oportunidad.actividad')
+            //console.log("cambiando a ", evt.target, data)
         }
 
         loadTemplates($state, "oportunidad", $http, $templateCache)
+    }])
+    .factory('oportunidad', [function(){
+        var oportunidad = {}
+        return oportunidad
     }])
     .directive("loadedDatatable", ['$rootScope', function($rootScope){
         return {
@@ -35,22 +40,28 @@ angular.module('app', ['ui.router'])
         }
     }])
 
-    .controller("oportunidad" ,["$state", function($state){
+    .controller("oportunidad" ,["$state", "$scope", function($state, $scope){
         $state.go("oportunidad.listar")
+
+        $scope.goOportunidad = () => $state.go("oportunidad.listar");
+
     }])
     .controller("oportunidad.listar", ["$scope", "$state", "$compile", "$scope", function($scope, $state, $compile, $scope){
 
-        cargarTabla('oportunidades', '/oportunidad', [{
-
-        }])
-
-        $scope.actividad = function (hola) {
-            console.log("actividad.....", hola)
-        }
+        cargarTabla('oportunidades', '/oportunidad', [
+            {name: 'representante', alias: 'Representante'},
+            {name: 'cliente', alias: 'Cliente'},
+            {name: 'fechaoportunidad', alias: 'Fecha Oportunidad'},
+            {name: 'descripcion', alias: 'Descripcion'},
+            {name: 'valor', alias: 'Valor'},
+            {name: 'etapaventa', alias: 'Etapa Venta'},
+            {name: 'fechacierre', alias: 'Fecha Cierre'},
+            {name: 'comentario', alias: 'Comentario'}
+        ])
 
 
     }])
-    .controller("oportunidad.actividad", ["$scope", "$state", "$rootScope", function($scope, $state, $rootScope){
+    .controller("oportunidad.actividad", ["$scope", "$state", "oportunidad", function($scope, $state, oportunidad){
 
     }])
 
@@ -76,11 +87,12 @@ async function loadTemplates($state, goState, $http, $templateCache) {
     
 }
 
-function click(data) {
-    EventBus.dispatch("newState", 'oportunidad.actividad', leer(data))
+function boton_click(element) {
+    var data = leer(element.getAttribute('data-itsc'))
+    EventBus.dispatch('newState', 'oportunidad.actividad', data)
 }
 
-async function cargarTabla (id, url, onclick) {
+async function cargarTabla (id, url, arrColumnas) {
     try {
         var data = await fetch(url, {credentials: "same-origin"})
 
@@ -92,21 +104,21 @@ async function cargarTabla (id, url, onclick) {
         document.getElementById(id).innerHTML = `
             <thead>
                 <tr>
-                    ${data.fields.reduce((html, val) => {
-                        return html + `<th> ${val} </th>`;
+                    ${arrColumnas.reduce((html, obj) => {
+                        return html + `<th> ${obj.alias} </th>`;
                     }, '')}
-                    <th >Click me </th>
+                    <th >Actividades </th>
                 </tr>
             </thead>
             <tbody>
                 ${data.rows.reduce((html, row) => {
                     return html + `
                         <tr> 
-                            ${data.fields.reduce((htmlr, val) => {
+                            ${arrColumnas.reduce((htmlr, obj) => {
                                 return htmlr + `
-                                <td> ${row[val] || ''} </td>`;        
+                                <td> ${row[obj.name] || ''} </td>`;        
                             }, '')}
-                                <td> <button onclick="click(${escribir(row)})">Hola </button> </td  
+                                <td> <button class="btn" onclick="boton_click(this)" data-itsc="${escribir(row)}">Mostrar </button> </td  
                         </tr>`;
                 }, '')}
             </tbody>

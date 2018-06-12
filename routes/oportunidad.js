@@ -8,6 +8,7 @@ router.get('/oportunidad', login.validarSesion, async function (req, res, next) 
         var org = req.session_itsc.ad_org_id;
         var query = `
         select
+            op.c_opportunity_id,
             repre.Name as representante,
             cb.Name as cliente,
             --org.name as 'Organizacion 2',

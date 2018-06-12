@@ -13,8 +13,6 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-//app.use(bodyParser.urlencoded({extended: true}))
-//app.use(bodyParser.text());
 
 app.use(cookieParser())
 
@@ -23,7 +21,6 @@ app.use(express.static(`${__dirname}/public`));
 app.use('/', require('./routes/index'));
 app.use('/', require('./routes/oportunidad'));
 app.use('/', require('./routes/login'));
-app.use('/', require('./routes/update'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

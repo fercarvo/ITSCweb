@@ -21,7 +21,7 @@ router.validarSesion = function (req, res, next) {
         if (req.url === '/')
             return res.redirect('/login/')
         
-        res.redirect(401)
+        next(e)
     }
 }
 
@@ -44,7 +44,7 @@ router.post('/login', async function (req, res, next) {
         return res.json(data)
         
     } catch (e) {
-        res.status(400).send('Error autenticacion ' + e.message);
+        next(e)
     }    
 })
 
@@ -60,8 +60,7 @@ router.post('/login/datos', async function (req, res, next) {
         res.send(token)
         
     } catch (e) {
-        console.log(e)
-        res.status(400).send('Error autenticacion ' + e.message);
+        next(e)
     }    
 })
 
