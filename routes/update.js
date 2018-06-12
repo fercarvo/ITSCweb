@@ -1,16 +1,22 @@
 var express = require('express');
 var request = require('request');
-var bodyParser = require('body-parser');
-
 var router = express.Router();
+
+var bodyParser = require('body-parser');
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
+
+
+router.post('/savefile', upload.single('avatar'), function (req, res, next) {
+    console.log(req.file)
+    res.send('good')
+})
+
 
 var auth = `Basic ${Buffer.from('SuperUser', 'ASCII').toString('base64')}:${Buffer.from('System', 'ASCII').toString('base64')}`
 var auth2 = "Basic U3VwZXJVc2VyOlN5c3RlbQ=="
 
 var fs = require("fs");
-var request = require("request");
-
-
 
 
 router.post('/update', bodyParser.text({type: '*/*'}), function (req, res, next) {
