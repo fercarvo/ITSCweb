@@ -12,51 +12,33 @@
 </head>
 
 <body >
-    <form method="post" enctype="multipart/form-data" action="/savefile" >
+    <!--<form method="post" enctype="multipart/form-data" action="/savefile" >
         <table >
 
             bundlefile
-            <input accept="jar|war" name="avatar" value="" type="file">    
+            <input accept="jar|war" name="file_jar_tecnico" value="" type="file">    
             
             <button type="submit">Enviar</button>
+    </form>-->
+
+    <form onsubmit="enviar(); return false;">
+        <input id="archivo" required type="file">
+        <button type="submit"> Enviar archivo </button>
     </form>
 
-
-    <!--<input id="archivo" required type="file">
-    <button onclick="enviar()"> Enviar archivo </button>-->
-
-
     <script>
-        var archivo;
-        var filename;
-
-        document.getElementById('archivo').onchange = evt => {
-            var file = evt.target.files[0];
-            filename = file.name
-            var reader = new FileReader();
-            reader.onload = () => {
-                console.log(reader.type, file.name)
-                archivo = new Blob([reader.result], {type: null}, file.name)
-            }
-            reader.readAsText(file);
-        }
-
-
         async function enviar () {
             try {
+                var url = new URL('http://localhost:3000/savefile')
+                url.search = new URLSearchParams({
+                    server: 'itsc',
+                    foo: "bar"
+                })
                 var data = new FormData()
-                data.append('action', 'install')
-                data.append('bundlestart', 'start')
-                data.append('refreshPackages', 'refresh')
-                data.append('bundlestartlevel', '1')
-                data.append('bundlefile', archivo, filename)
+                data.append('file_jar_tecnico', document.getElementById('archivo').files[0])
 
-                var result = await fetch("/update", {
+                var result = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Authorization': `Basic ${btoa("SuperUser")}:${btoa("System")}`
-                    },
                     body: data
                 })
 

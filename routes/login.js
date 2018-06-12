@@ -31,6 +31,7 @@ router.get('/logout', function (req, res, next) {
 })
 
 router.post('/login', async function (req, res, next) {
+    console.log(req.body)
     if (!req.body || !req.body.usuario || !req.body.clave)
         return res.status(400).send('Por favor, envie datos correctos');
 
