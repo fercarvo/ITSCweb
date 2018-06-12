@@ -37,9 +37,43 @@ router.get('/oportunidad', login.validarSesion, async function (req, res, next) 
   
         var data = await pool.query(query);
 
+        res.set('Cache-Control', 'private, max-age=30');
         res.json(parseDBdata(data));
     } catch (e) {
         next(e)
+    }
+})
+
+router.get('/oportunidad/:id/actividades', login.validarSesion, async function (req, res, next) {
+    try {
+        var org = req.session_itsc.ad_org_id;
+        var oportunidad = req.params.id || -1;
+        var query = `
+            select
+                u.name as usuario,
+                tipo.name as tipoactividad,
+                ac.StartDate::text as fechainicio,
+                repc.name as representantecomercial,
+                ac.description as descripcion
+            from C_ContactActivity ac
+            left join (
+                select rl.name, rl.value 
+                from AD_Reference re 
+                join AD_Ref_List rl on rl.AD_Reference_ID = re.AD_Reference_ID
+                where re.name = 'C_ContactActivity Type'
+            ) as tipo on ac.ContactActivityType = tipo.value
+            left join AD_User u on u.AD_User_ID = ac.AD_User_ID and u.isactive = 'Y'
+            left join AD_User repc on repc.AD_User_ID = ac.SalesRep_ID and repc.isactive = 'Y'
+            where (${org})::numeric in (ac.ad_org_id, 0)
+                and ac.isactive = 'Y'
+                and ac.C_Opportunity_ID = (${oportunidad})::numeric`;
+
+        var data = await pool.query(query);
+        
+        res.set('Cache-Control', 'private, max-age=30');
+        res.json(parseDBdata(data));
+    } catch (e) {
+        next((e))
     }
 })
 

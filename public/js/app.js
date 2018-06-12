@@ -14,19 +14,20 @@ angular.module('app', ['ui.router'])
                 controller: 'oportunidad.actividad'
             })        
     }])
-    .run(["$state", "$http", "$templateCache", function ($state, $http, $templateCache) {
+    .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
         EventBus.addEventListener("newState", cambiar)
 
         function cambiar(evt, data) {
+            op.data = data
             $state.go('oportunidad.actividad')
-            //console.log("cambiando a ", evt.target, data)
         }
 
         loadTemplates($state, "oportunidad", $http, $templateCache)
     }])
     .factory('oportunidad', [function(){
-        var oportunidad = {}
-        return oportunidad
+        return {
+            data: null
+        }
     }])
     .directive("loadedDatatable", ['$rootScope', function($rootScope){
         return {
@@ -42,9 +43,6 @@ angular.module('app', ['ui.router'])
 
     .controller("oportunidad" ,["$state", "$scope", function($state, $scope){
         $state.go("oportunidad.listar")
-
-        $scope.goOportunidad = () => $state.go("oportunidad.listar");
-
     }])
     .controller("oportunidad.listar", ["$scope", "$state", "$compile", "$scope", function($scope, $state, $compile, $scope){
 
@@ -56,13 +54,24 @@ angular.module('app', ['ui.router'])
             {name: 'valor', alias: 'Valor'},
             {name: 'etapaventa', alias: 'Etapa Venta'},
             {name: 'fechacierre', alias: 'Fecha Cierre'},
-            {name: 'comentario', alias: 'Comentario'}
+            {name: 'comentario', alias: 'Comentario'},
+            {alias: 'Actividades', cb: data => `<button class="btn" onclick="boton_click(this)" data-itsc="${data}">Mostrar </button>`}
         ])
 
 
     }])
-    .controller("oportunidad.actividad", ["$scope", "$state", "oportunidad", function($scope, $state, oportunidad){
+    .controller("oportunidad.actividad", ["$scope", "$state", "oportunidad", function($scope, $state, op){
+        if (op.data.c_opportunity_id) {
+            cargarTabla('actividades', `/oportunidad/${op.data.c_opportunity_id}/actividades`, [
+                {name: 'usuario', alias: 'Usuario'},
+                {name: 'tipoactividad', alias: 'Tipo Actividad'},
+                {name: 'fechainicio', alias: 'Fecha Inicio'},
+                {name: 'representantecomercial', alias: 'Rep. Comercial'},
+                {name: 'descripcion', alias: 'Descripciòn'}
+            ])
+        } else {
 
+        }
     }])
 
 async function loadTemplates($state, goState, $http, $templateCache) {
@@ -107,7 +116,6 @@ async function cargarTabla (id, url, arrColumnas) {
                     ${arrColumnas.reduce((html, obj) => {
                         return html + `<th> ${obj.alias} </th>`;
                     }, '')}
-                    <th >Actividades </th>
                 </tr>
             </thead>
             <tbody>
@@ -116,9 +124,8 @@ async function cargarTabla (id, url, arrColumnas) {
                         <tr> 
                             ${arrColumnas.reduce((htmlr, obj) => {
                                 return htmlr + `
-                                <td> ${row[obj.name] || ''} </td>`;        
+                                <td> ${obj.name ? (row[obj.name] || '') : obj.cb(escribir(row))} </td>`;        
                             }, '')}
-                                <td> <button class="btn" onclick="boton_click(this)" data-itsc="${escribir(row)}">Mostrar </button> </td  
                         </tr>`;
                 }, '')}
             </tbody>
