@@ -42,6 +42,7 @@ angular.module('app', ['ui.router'])
     }])
 
     .controller("oportunidad" ,["$state", "$scope", function($state, $scope){
+        console.log("holaaa")
         $state.go("oportunidad.listar")
     }])
     .controller("oportunidad.listar", ["$scope", "$state", "$compile", "$scope", function($scope, $state, $compile, $scope){
@@ -61,13 +62,15 @@ angular.module('app', ['ui.router'])
 
     }])
     .controller("oportunidad.actividad", ["$scope", "$state", "oportunidad", function($scope, $state, op){
-        if (op.data.c_opportunity_id) {
+        if (op.data && op.data.c_opportunity_id) {
             cargarTabla('actividades', `/oportunidad/${op.data.c_opportunity_id}/actividades`, [
-                {name: 'usuario', alias: 'Usuario'},
                 {name: 'tipoactividad', alias: 'Tipo Actividad'},
-                {name: 'fechainicio', alias: 'Fecha Inicio'},
-                {name: 'representantecomercial', alias: 'Rep. Comercial'},
-                {name: 'descripcion', alias: 'Descripciòn'}
+                {name: 'fechainicio', alias: 'Fecha Inicio'},              
+                {name: 'siguiente_name', alias: 'Tipo Siguiente'},
+                {name: 'siguiente_fecha', alias: 'Fecha Siguiente'},
+                {name: 'estado', alias: 'Estado'},
+                {name: 'descripcion', alias: 'Descripciòn'},
+                {name: 'usuario', alias: 'Usuario'}  
             ])
         } else {
 
