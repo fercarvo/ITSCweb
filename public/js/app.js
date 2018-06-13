@@ -65,11 +65,11 @@ angular.module('app', ['ui.router'])
         if (op.data && op.data.c_opportunity_id) {
             cargarTabla('actividades', `/oportunidad/${op.data.c_opportunity_id}/actividades`, [
                 {name: 'tipoactividad', alias: 'Tipo Actividad'},
-                {name: 'fechainicio', alias: 'Fecha Inicio'},              
+                {name: 'fechainicio', alias: 'Fecha Inicio'},
+                {name: 'descripcion', alias: 'Descripciòn'},              
                 {name: 'siguiente_name', alias: 'Tipo Siguiente'},
                 {name: 'siguiente_fecha', alias: 'Fecha Siguiente'},
                 {name: 'estado', alias: 'Estado'},
-                {name: 'descripcion', alias: 'Descripciòn'},
                 {name: 'usuario', alias: 'Usuario'}  
             ])
         } else {
