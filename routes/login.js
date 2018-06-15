@@ -54,7 +54,8 @@ router.post('/login', async function (req, res, next) {
         }
 
     } catch (e) {
-        next(e)
+        console.log(e)
+        res.redirect(`/login?msg=${encodeURIComponent(e.message)}`) 
     }    
 })
 
@@ -71,7 +72,8 @@ router.post('/rol', async function (req, res, next) {
         res.redirect('/')  
         
     } catch (e) {
-        next(e)
+        console.log(e)
+        res.redirect(`/login?msg=${encodeURIComponent(e.message)}`) 
     }    
 })
 
