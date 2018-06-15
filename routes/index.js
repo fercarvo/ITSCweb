@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var login = require('./login')
-var { pool } = require('../util/postgresql.js');
 
 /* GET home page. */
 router.get('/', login.validarSesion, function(req, res, next) {
+  res.set('Cache-Control', 'private, max-age=60')
   res.render('index');
 });
 

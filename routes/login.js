@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var { pool } = require('../util/postgresql.js');
+var { pool, secret, sign_alg } = require('../util/DB.js');
 var cookies = require('cookie-parser');
 const crypto = require('crypto');
 
@@ -9,6 +9,7 @@ router.use(function (req, res, next) {
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
     next();
 })
+
 
 router.get('/login', function(req, res, next) {
     res.render('login');
@@ -32,81 +33,66 @@ router.validarSesion = function (req, res, next) {
 
 router.get('/logout', function (req, res, next) {
     res.clearCookie('session_itsc');
-    res.redirect('/login')
+    res.redirect('/login/')
 })
 
 router.post('/login', async function (req, res, next) {
-    console.log(req.body)
     if (!req.body || !req.body.usuario || !req.body.clave)
-        return res.status(400).send('Por favor, envie datos correctos');
+        return res.redirect(`/login?msg=${encodeURIComponent('Por favor, envie datos correctos')}`);
 
     try {
         var data = await checkUsuario(req.body.usuario, req.body.clave)
 
-        if (data.length === 0)
-            return res.status(400).send('Usuario/Clave Incorrectos');
+        if (data.length === 0) {
+            return res.redirect(`/login?msg=${encodeURIComponent('Usuario/Clave Incorrectos')}`) 
+        } else {
+            return res.render('rol', {
+                usr: req.body.usuario,
+                pass: req.body.clave,
+                roles: encodeURIComponent( JSON.stringify(data) )
+            })
+        }
 
-        return res.json(data)
-        
     } catch (e) {
         next(e)
     }    
 })
 
-router.post('/login/datos', async function (req, res, next) {
+router.post('/rol', async function (req, res, next) {
+    console.log(req.body)
     if (!req.body || !req.body.usuario || !req.body.clave || !req.body.ad_client_id || !req.body.ad_role_id || !req.body.ad_org_id)
-        return res.status(400).send('Por favor, envie datos correctos');
+        return res.redirect(`/login?msg=${encodeURIComponent('Por favor, envie datos correctos')}`);
 
     try {
         var data = await createPayload(req.body.usuario, req.body.clave, req.body.ad_client_id, req.body.ad_role_id, req.body.ad_org_id, req.body.m_warehouse_id)
         var token = createToken(data)
 
-        //res.cookie('session_itsc', token,  { maxAge: 1000*60*60*12, httpOnly: true})
-        res.send(token)
+        res.cookie('session_itsc', token,  { maxAge: 1000*60*60*12, httpOnly: true})
+        res.redirect('/')  
         
     } catch (e) {
         next(e)
     }    
 })
 
-router.get('/login/token/:data', function (req, res, next) {
-    try {
-
-        var token = decodeURIComponent(req.params.data)
-
-        readToken(token)
-        res.cookie('session_itsc', token,  { maxAge: 1000*60*60*12, httpOnly: true})
-        res.redirect(301, '/')  
-    } catch (e) {
-        console.log("error token", e)
-        res.redirect('/login')
-    }
-})
-
-
-
 async function checkUsuario (usuario, clave) {
     var client = await pool.connect()
-    var query = `select distinct
-        u.AD_User_ID,
-        u.name, 
-        u.email,
-        c.AD_Client_ID,
-        c.name as grupo,
-        r.ad_role_id,
-        r.name as rol,
-        org.AD_Org_ID,
-        org.name as organizacion,
-        w.m_warehouse_id,
-        w.name as warehouse
-    from vistasapp.vw_login_grupoempresarial c
-    inner join ad_user u on u.ad_user_id = c.ad_user_id
-    inner join vistasapp.vw_login_rol r on r.ad_client_id = c.ad_client_id
-    inner join vistasapp.vw_login_organizacion org on org.ad_role_id = r.ad_role_id
-    left join m_warehouse w on w.ad_org_id = org.ad_org_id and w.isactive = 'Y'
-    where u.isactive = 'Y' 
-        and c.name != 'GardenWorld' 
-        and c.user = '${usuario}' and c.password = '${clave}'`;
+
+    var query = `    
+        select
+            AD_User_ID,
+            name, 
+            email,
+            AD_Client_ID,
+            grupo,
+            ad_role_id,
+            rol,
+            AD_Org_ID,
+            organizacion,
+            m_warehouse_id,
+            warehouse
+        from vistasapp.vw_login_datos c 
+        where c.user = '${usuario}' and c.password = '${clave}'`;
         
     var { rows } = await client.query(query);
     client.release();
@@ -115,7 +101,7 @@ async function checkUsuario (usuario, clave) {
 
 async function createPayload (usuario, clave, ad_client_id, ad_role_id, ad_org_id, m_warehouse_id) {
     var client = await pool.connect()
-    var warehouse = (m_warehouse_id !== null && m_warehouse_id !== "") ? `and w.m_warehouse_id = ${m_warehouse_id}::numeric` : ""
+    var warehouse = Number.isInteger(Number(m_warehouse_id)) ? `and w.m_warehouse_id = ${m_warehouse_id}::numeric` : ""
     var query = `select distinct
         u.AD_User_ID,
         u.name, 
@@ -136,9 +122,9 @@ async function createPayload (usuario, clave, ad_client_id, ad_role_id, ad_org_i
     where u.isactive = 'Y' 
         and c.name != 'GardenWorld' 
         and c.user = '${usuario}' and c.password = '${clave}'
-        and c.ad_client_id = ${ad_client_id}::numeric
-        and r.ad_role_id = ${ad_role_id}::numeric
-        and org.AD_Org_ID = ${ad_org_id}::numeric
+        and c.ad_client_id = ${Number(ad_client_id)}::numeric
+        and r.ad_role_id = ${Number(ad_role_id)}::numeric
+        and org.AD_Org_ID = ${Number(ad_org_id)}::numeric
         ${warehouse}`;
     
     var { rows } = await client.query(query);
@@ -147,8 +133,10 @@ async function createPayload (usuario, clave, ad_client_id, ad_role_id, ad_org_i
         throw new Error("Los parametros de entrada no coinciden.");
 
     var payload = rows[0]
+    payload.iat = new Date();
     payload.lang = "es_EC"
     payload.stage = 0
+
     client.release();
     return payload
 }
@@ -156,20 +144,20 @@ async function createPayload (usuario, clave, ad_client_id, ad_role_id, ad_org_i
 
 //Crea token de sesion
 function createToken (json) {
-    var hmac = crypto.createHmac('SHA256', 'ItSCS3cret0fLif3');
+    var hmac = crypto.createHmac(sign_alg, secret);
     var payload = JSON.stringify(json)
     var payload_base64 = Buffer.from(payload, 'utf8').toString('base64')
 
     hmac.update(payload, 'utf8');
     var sign = hmac.digest('base64');
 
-    return `${payload_base64}.${sign}`;
+    return encodeURIComponent(`${payload_base64}.${sign}`);
 }
 
 //Lee token de sesion, verifica y retorna payload
 function readToken (text) {
-    var hmac = crypto.createHmac('SHA256', 'ItSCS3cret0fLif3');
-    var cookie = text.split('.')
+    var hmac = crypto.createHmac(sign_alg, secret);
+    var cookie = decodeURIComponent(text).split('.')
 
     if (cookie.length !== 2)
         throw new Error('Cookie invalida, no cumple formato');
