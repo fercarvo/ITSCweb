@@ -98,9 +98,9 @@ angular.module('app', ['ui.router'])
             {name: 'fechainicio', alias: 'Fecha'},
             {name: 'descripcion', alias: 'Descripciòn'},
             {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
+            {name: 'cliente', alias: 'Prospecto'},
             {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
             {name: 'siguiente_name', alias: 'Tipo'},                      
-            {name: 'cliente', alias: 'Prospecto'},
             {name: 'usuario', alias: 'Usuario'}  
         ])
 
