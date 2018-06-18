@@ -34,7 +34,7 @@ angular.module('app', ['ui.router'])
             $state.go('oportunidad.actividad')
         }
 
-        loadTemplates($state, "oportunidad", $http, $templateCache)
+        loadTemplates($state, "agenda_hoy", $http, $templateCache)
     }])
     .factory('oportunidad', [function(){
         return {
