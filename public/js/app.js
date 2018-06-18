@@ -12,7 +12,19 @@ angular.module('app', ['ui.router'])
             .state('oportunidad.actividad', {
                 templateUrl: '/views/oportunidad/actividad.html',
                 controller: 'oportunidad.actividad'
-            })        
+            })
+            .state('agenda_hoy', { //agenda_dos_semanas
+                templateUrl: '/views/agenda/ultimas.html',
+                controller: 'agenda_hoy'
+            })
+            .state('agenda_7dias', { //agenda_dos_semanas gestiones_realizadas
+                templateUrl: '/views/agenda/dos_semanas.html',
+                controller: 'agenda_7dias'
+            })
+            .state('gestiones_realizadas', { //agenda_dos_semanas gestiones_realizadas
+                templateUrl: '/views/gestiones_realizadas.html',
+                controller: 'gestiones_realizadas'
+            })          
     }])
     .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
         EventBus.addEventListener("newState", cambiar)
@@ -40,7 +52,6 @@ angular.module('app', ['ui.router'])
             }
         }
     }])
-
     .controller("oportunidad" ,["$state", "$scope", function($state, $scope){
         console.log("holaaa")
         $state.go("oportunidad.listar")
@@ -76,6 +87,48 @@ angular.module('app', ['ui.router'])
         } else {
 
         }
+    }])
+    .controller('gestiones_realizadas', ["$scope", function($scope){
+        
+        cargarTabla('gestiones_realizadas', `/gestiones_realizadas/?dateto=${new Date()}`, [
+            {name: 'tipoactividad', alias: 'Última Gestion'},
+            {name: 'fechainicio', alias: 'Fecha'},
+            {name: 'descripcion', alias: 'Descripciòn'},
+            {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
+            {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
+            {name: 'siguiente_name', alias: 'Tipo'}, //descripcion oportunidad, cliente, oportunidad_descripcion                          
+            {name: 'cliente', alias: 'Prospecto'},
+            {name: 'usuario', alias: 'Usuario'}  
+        ])
+
+    }])
+    .controller('agenda_hoy', ["$scope", function($scope){
+        
+        cargarTabla('agenda_hoy', `/agenda/ultimas/`, [
+            {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
+            {name: 'siguiente_name', alias: 'Tipo'}, //descripcion oportunidad, cliente, oportunidad_descripcion                          
+            {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
+            {name: 'cliente', alias: 'Prospecto'},
+            {name: 'tipoactividad', alias: 'Última Gestion'},
+            {name: 'fechainicio', alias: 'Fecha'},
+            {name: 'descripcion', alias: 'Descripciòn'},
+            {name: 'usuario', alias: 'Usuario'}  
+        ])
+
+    }])
+    .controller('agenda_7dias', ["$scope", function($scope){
+        
+        cargarTabla('agenda_7dias', `/agenda/dos_semanas/`, [
+            {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
+            {name: 'siguiente_name', alias: 'Tipo'}, //descripcion oportunidad, cliente, oportunidad_descripcion                          
+            {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
+            {name: 'cliente', alias: 'Prospecto'},
+            {name: 'tipoactividad', alias: 'Última Gestion'},
+            {name: 'fechainicio', alias: 'Fecha'},
+            {name: 'descripcion', alias: 'Descripciòn'},
+            {name: 'usuario', alias: 'Usuario'}  
+        ])
+
     }])
 
 async function loadTemplates($state, goState, $http, $templateCache) {

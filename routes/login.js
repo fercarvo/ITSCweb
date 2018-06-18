@@ -27,7 +27,7 @@ router.validarSesion = function (req, res, next) {
         if (req.url === '/')
             return res.redirect('/login/')
         
-        next(e)
+        res.status(401).send('Unauthorized')
     }
 }
 

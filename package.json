@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "wtest": "set NODE_ENV=development && node ./bin/www",
-    "test": "NODE_ENV=development node ./bin/www",
+    "test": "node ./bin/www",
     "start": "NODE_ENV=production node ./bin/www"
   },
   "dependencies": {

@@ -11,11 +11,11 @@ router.get('/oportunidad', login.validarSesion, async function (req, res, next) 
             op.c_opportunity_id,
             repre.Name as representante,
             cb.Name as cliente,
-            to_char(op.foportunidad, 'dd/MM/yyyy') as fechaoportunidad,
+            to_char(op.foportunidad, 'yyyy/MM/dd') as fechaoportunidad,
             op.description as descripcion,
             op.OpportunityAmt::numeric(10,2)::text as valor,
             ss.Name as etapaventa,
-            to_char(op.ExpectedCloseDate, 'dd/MM/yyyy') as fechacierre,            
+            to_char(op.ExpectedCloseDate, 'yyyy/MM/dd') as fechacierre,            
             op.Comments as comentario
         from c_opportunity op
         join C_BPartner cb on cb.C_BPartner_ID=op.C_BPartner_ID 
@@ -46,10 +46,10 @@ router.get('/oportunidad/:id/actividades', login.validarSesion, async function (
         select
             u.name as usuario,
             tipo.name as tipoactividad,
-            to_char(ac.StartDate, 'dd/MM/yyyy') as fechainicio,
+            to_char(ac.StartDate, 'yyyy/MM/dd') as fechainicio,
             repc.name as representantecomercial,
             ac.description as descripcion,
-            to_char(ac.EndDate, 'dd/MM/yyyy hh:mm') as siguiente_fecha,
+            to_char(ac.EndDate, 'yyyy/MM/dd hh:mm') as siguiente_fecha,
             (	select distinct trad.name
                 from AD_Reference re 
                 join AD_Ref_List rl on rl.AD_Reference_ID = re.AD_Reference_ID
