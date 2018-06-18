@@ -21,9 +21,9 @@ angular.module('app', ['ui.router'])
                 templateUrl: '/views/agenda/dos_semanas.html',
                 controller: 'agenda_7dias'
             })
-            .state('gestiones_realizadas', { //agenda_dos_semanas gestiones_realizadas
+            .state('gestiones_7dias', { //agenda_dos_semanas gestiones_realizadas
                 templateUrl: '/views/gestiones_realizadas.html',
-                controller: 'gestiones_realizadas'
+                controller: 'gestiones_7dias'
             })          
     }])
     .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
@@ -88,15 +88,18 @@ angular.module('app', ['ui.router'])
 
         }
     }])
-    .controller('gestiones_realizadas', ["$scope", function($scope){
+    .controller('gestiones_7dias', ["$scope", function($scope){
+
+        var datefrom = moment().subtract(7, 'days').format('YYYY-MM-DD')
+        var dateto = moment().format('YYYY-MM-DD')
         
-        cargarTabla('gestiones_realizadas', `/gestiones_realizadas/?dateto=${new Date()}`, [
+        cargarTabla('gestiones_7dias', `/gestiones/?datefrom=${datefrom}&dateto=${dateto}`, [
             {name: 'tipoactividad', alias: 'Última Gestion'},
             {name: 'fechainicio', alias: 'Fecha'},
             {name: 'descripcion', alias: 'Descripciòn'},
             {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
             {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
-            {name: 'siguiente_name', alias: 'Tipo'}, //descripcion oportunidad, cliente, oportunidad_descripcion                          
+            {name: 'siguiente_name', alias: 'Tipo'},                      
             {name: 'cliente', alias: 'Prospecto'},
             {name: 'usuario', alias: 'Usuario'}  
         ])
@@ -104,9 +107,9 @@ angular.module('app', ['ui.router'])
     }])
     .controller('agenda_hoy', ["$scope", function($scope){
         
-        cargarTabla('agenda_hoy', `/agenda/ultimas/`, [
+        cargarTabla('agenda_hoy', `/agenda/?dateto=${moment().format("YYYY-MM-DD")}`, [
             {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
-            {name: 'siguiente_name', alias: 'Tipo'}, //descripcion oportunidad, cliente, oportunidad_descripcion                          
+            {name: 'siguiente_name', alias: 'Tipo'},                         
             {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
             {name: 'cliente', alias: 'Prospecto'},
             {name: 'tipoactividad', alias: 'Última Gestion'},
@@ -118,7 +121,7 @@ angular.module('app', ['ui.router'])
     }])
     .controller('agenda_7dias', ["$scope", function($scope){
         
-        cargarTabla('agenda_7dias', `/agenda/dos_semanas/`, [
+        cargarTabla('agenda_7dias', `/agenda/?dateto=${moment().add(7, 'days').format("YYYY-MM-DD")}`, [
             {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
             {name: 'siguiente_name', alias: 'Tipo'}, //descripcion oportunidad, cliente, oportunidad_descripcion                          
             {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
