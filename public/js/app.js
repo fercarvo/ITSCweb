@@ -94,8 +94,8 @@ angular.module('app', ['ui.router'])
         var dateto = moment().format('YYYY-MM-DD')
         
         cargarTabla('gestiones_7dias', `/gestiones/?datefrom=${datefrom}&dateto=${dateto}`, [
-            {name: 'tipoactividad', alias: 'Última Gestion'},
             {name: 'fechainicio', alias: 'Fecha'},
+            {name: 'tipoactividad', alias: 'Última Gestion'},
             {name: 'descripcion', alias: 'Descripciòn'},
             {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
             {name: 'cliente', alias: 'Prospecto'},
