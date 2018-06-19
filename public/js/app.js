@@ -21,10 +21,14 @@ angular.module('app', ['ui.router'])
                 templateUrl: '/views/agenda/dos_semanas.html',
                 controller: 'agenda_7dias'
             })
-            .state('gestiones_7dias', { //agenda_dos_semanas gestiones_realizadas
-                templateUrl: '/views/gestiones_realizadas.html',
-                controller: 'gestiones_7dias'
-            })          
+            .state('gestion_hoy', { //gestion_7dias
+                templateUrl: '/views/gestion/hoy.html',
+                controller: 'gestion_hoy'
+            })
+            .state('gestion_7dias', { //gestion_7dias
+                templateUrl: '/views/gestion/7dias.html',
+                controller: 'gestion_7dias'
+            })           
     }])
     .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
         EventBus.addEventListener("newState", cambiar)
@@ -88,12 +92,28 @@ angular.module('app', ['ui.router'])
 
         }
     }])
-    .controller('gestiones_7dias', ["$scope", function($scope){
+    .controller('gestion_hoy', ["$scope", function($scope){
+
+        var today = moment().format('YYYY-MM-DD')
+        
+        cargarTabla('gestion_hoy', `/gestiones/?datefrom=${today}&dateto=${today}`, [
+            {name: 'fechainicio', alias: 'Fecha'},
+            {name: 'tipoactividad', alias: 'Última Gestion'},
+            {name: 'descripcion', alias: 'Descripciòn'},
+            {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
+            {name: 'cliente', alias: 'Prospecto'},
+            {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
+            {name: 'siguiente_name', alias: 'Tipo'},                      
+            {name: 'usuario', alias: 'Usuario'}  
+        ])
+
+    }])
+    .controller('gestion_7dias', ["$scope", function($scope){
 
         var datefrom = moment().subtract(7, 'days').format('YYYY-MM-DD')
         var dateto = moment().format('YYYY-MM-DD')
         
-        cargarTabla('gestiones_7dias', `/gestiones/?datefrom=${datefrom}&dateto=${dateto}`, [
+        cargarTabla('gestion_7dias', `/gestiones/?datefrom=${datefrom}&dateto=${dateto}`, [
             {name: 'fechainicio', alias: 'Fecha'},
             {name: 'tipoactividad', alias: 'Última Gestion'},
             {name: 'descripcion', alias: 'Descripciòn'},

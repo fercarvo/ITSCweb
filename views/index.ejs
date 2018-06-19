@@ -38,19 +38,27 @@
           </a>
         </li>
         
-        <li class="nav-item" data-placement="right" ui-sref-active="active" ui-sref="gestiones_7dias" title="Gestiones Realizadas">
-          <a class="nav-link" >
-            <i class="fa fa-fw fa-upload"></i>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#gestiones_coll" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-sitemap"></i>
             <span class="nav-link-text">Gestiones Realizadas</span>
           </a>
+          <ul class="sidenav-second-level collapse" id="gestiones_coll">
+            <li ui-sref-active="active" ui-sref="gestion_hoy">
+              <a >Hoy</a>
+            </li>
+            <li ui-sref-active="active" ui-sref="gestion_7dias">
+              <a >Hace 7 dias</a>
+            </li>
+          </ul>
         </li>
 
         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
-          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti" data-parent="#exampleAccordion">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#agenda_coll" data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-sitemap"></i>
             <span class="nav-link-text">Agenda</span>
           </a>
-          <ul class="sidenav-second-level collapse" id="collapseMulti">
+          <ul class="sidenav-second-level collapse" id="agenda_coll">
             <li ui-sref-active="active" ui-sref="agenda_hoy">
               <a >Hoy</a>
             </li>

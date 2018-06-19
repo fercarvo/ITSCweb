@@ -60,7 +60,6 @@ router.post('/login', async function (req, res, next) {
 })
 
 router.post('/rol', async function (req, res, next) {
-    console.log(req.body)
     if (!req.body || !req.body.usuario || !req.body.clave || !req.body.ad_client_id || !req.body.ad_role_id || !req.body.ad_org_id)
         return res.redirect(`/login?msg=${encodeURIComponent('Por favor, envie datos correctos')}`);
 
