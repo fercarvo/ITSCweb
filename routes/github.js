@@ -5,6 +5,7 @@ const { exec } = require('child_process');
 
 router.post('/github/webhook', function(req, res, next) {
     console.log('github webhooks...')
+    console.log(req.headers)
     var github_header = req.headers['X-Hub-Signature']
 
     if (github_header && github_header === github_secret) {
