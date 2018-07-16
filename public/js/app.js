@@ -1,17 +1,21 @@
 angular.module('app', ['ui.router'])
     .config(["$stateProvider", "$compileProvider", function ($stateProvider, $compileProvider) {
         $stateProvider
-            .state('oportunidad', {
+            /*.state('oportunidad', {
                 templateUrl: '/views/oportunidad/head.html',
                 controller: 'oportunidad'
-            })
-            .state('oportunidad.listar', {
+            })*/
+            .state('oportunidad_listar', {
                 templateUrl: '/views/oportunidad/listar.html',
-                controller: 'oportunidad.listar'
+                controller: 'oportunidad_listar'
             }) 
-            .state('oportunidad.actividad', {
+            .state('oportunidad_actividad', {
                 templateUrl: '/views/oportunidad/actividad.html',
-                controller: 'oportunidad.actividad'
+                controller: 'oportunidad_actividad'
+            })
+            .state('oportunidad_solicitudes', {
+                templateUrl: '/views/oportunidad/solicitudes.html',
+                controller: 'oportunidad_solicitudes'
             })
             .state('agenda_hoy', { //agenda_dos_semanas
                 templateUrl: '/views/agenda/ultimas.html',
@@ -34,11 +38,11 @@ angular.module('app', ['ui.router'])
         EventBus.addEventListener("newState", cambiar)
 
         function cambiar(evt, data) {
-            op.data = data
-            $state.go('oportunidad.actividad')
+            op.data = data;
+            $state.go(evt.target);
         }
 
-        loadTemplates($state, "agenda_hoy", $http, $templateCache)
+        loadTemplates($state, "oportunidad_listar", $http, $templateCache)
     }])
     .factory('oportunidad', [function(){
         return {
@@ -56,11 +60,12 @@ angular.module('app', ['ui.router'])
             }
         }
     }])
-    .controller("oportunidad" ,["$state", "$scope", function($state, $scope){
+    /*.controller("oportunidad" ,["$state", "$scope", function($state, $scope){
         console.log("holaaa")
         $state.go("oportunidad.listar")
-    }])
-    .controller("oportunidad.listar", ["$scope", "$state", "$compile", "$scope", function($scope, $state, $compile, $scope){
+    }])*/
+    .controller("oportunidad_listar", ["$scope", "$state", "$compile", "$scope", function($scope, $state, $compile, $scope){
+        console.log("Hola oportunidad")
 
          cargarTabla('oportunidades', '/oportunidad', [
             {name: 'descripcion', alias: 'Descripcion'},
@@ -71,13 +76,14 @@ angular.module('app', ['ui.router'])
             {name: 'etapaventa', alias: 'Etapa Venta'},
             {name: 'fechacierre', alias: 'Fecha Cierre'},
             {name: 'comentario', alias: 'Comentario'},
-            {alias: 'Actividades', cb: data => `<button class="btn" onclick="boton_click(this)" data-itsc="${data}">Mostrar </button>`}
+            {alias: 'Actividades', cb: data => `<button class="btn" onclick="boton_click(this)" data-itsc="${data}">Mostrar </button>`},
+            {alias: 'Solicitudes', cb: data => `<button class="btn" onclick="cargarSolicitudes('${data}')">Mostrar </button>`}
         ])
 
 
 
     }])
-    .controller("oportunidad.actividad", ["$scope", "$state", "oportunidad", function($scope, $state, op){
+    .controller("oportunidad_actividad", ["$scope", "$state", "oportunidad", function($scope, $state, op){
         if (op.data && op.data.c_opportunity_id) {
             cargarTabla('actividades', `/oportunidad/${op.data.c_opportunity_id}/actividades`, [
                 {name: 'tipoactividad', alias: 'Tipo Actividad'},
@@ -91,6 +97,23 @@ angular.module('app', ['ui.router'])
         } else {
 
         }
+    }])
+    .controller("oportunidad_solicitudes", ["$scope", "$state", "oportunidad", function($scope, $state, op){
+        
+        cargarTabla('solicitudes', `/oportunidad/${op.data.c_opportunity_id}/solicitudes`, [
+            {name: 'tipo_solicitud', alias: 'Tipo'},
+            {name: 'asunto', alias: 'Asunto'},
+            {name: 'grupo_solicitud', alias: 'Grupo'},
+            {name: 'categoria_solicitud', alias: 'Categoria'},
+            {name: 'solicitante', alias: 'Solicitante'},
+            {name: 'destinatario', alias: 'Destinatario'},
+            {name: 'tipo_vencimiento', alias: 'Tipo Vencimiento'},
+            {name: 'fecha_creado', alias: 'Creación'},
+            {name: 'fecha_actualizacion', alias: 'Actualización'},        
+            {name: 'usr_actualizo', alias: 'Usuario Actualización'},
+            {name: 'estado_solicitud', alias: 'Estado'},
+        ])
+
     }])
     .controller('gestion_hoy', ["$scope", function($scope){
 
@@ -178,7 +201,11 @@ async function loadTemplates($state, goState, $http, $templateCache) {
 
 function boton_click(element) {
     var data = leer(element.getAttribute('data-itsc'))
-    EventBus.dispatch('newState', 'oportunidad.actividad', data)
+    EventBus.dispatch('newState', 'oportunidad_actividad', data)
+}
+
+function cargarSolicitudes(data) {
+    EventBus.dispatch('newState', 'oportunidad_solicitudes', leer(data));
 }
 
 async function cargarTabla (id, url, arrColumnas) {

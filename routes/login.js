@@ -76,6 +76,21 @@ router.post('/rol', async function (req, res, next) {
     }    
 })
 
+async function getSecret (AD_User_ID) {
+    var client = await pool.connect()
+
+    var query = `    
+        select
+            user,
+            password,
+        from vistasapp.vw_login_datos c 
+        where c.ad_user_id = ${Number(AD_User_ID)}::integer`;
+        
+    var { rows } = await client.query(query);
+    client.release();
+    return rows[0]
+}
+
 async function checkUsuario (usuario, clave) {
     var client = await pool.connect()
 
@@ -175,4 +190,4 @@ function readToken (text) {
     return JSON.parse(payload)
 }
 
-module.exports = router;  
+module.exports = {router, getSecret};  
