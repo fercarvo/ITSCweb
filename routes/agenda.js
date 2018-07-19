@@ -91,7 +91,7 @@ async function getAgenda(org, dateTo) {
     return parseDBdata(data);
 }
 
-async function getGestiones(org, datefrom, dateto) {
+async function  getGestiones(org, datefrom, dateto) {
     org = Number(org);
     datefrom = moment(datefrom, "YYYY-MM-DD").format("YYYY-MM-DD")
     dateto = moment(dateto, "YYYY-MM-DD").format("YYYY-MM-DD")
