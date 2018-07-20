@@ -163,7 +163,7 @@ angular.module('app', ['ui.router'])
                 var data = {tipo_actividad, fecha_gestion, gestion, next_activity, next_activity_date }
                 console.log(data);
 
-                var result = await fetch("/nuevagestion", {
+                var result = await fetch(`/gestion/${gestion.data.c_contactactivity_id}/nueva`, {
                     credentials: "same-origin",
                     method: 'POST',
                     body: JSON.stringify(data),
