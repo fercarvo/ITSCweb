@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var login = require('./login')
+var login = require('./login').router
 
 /* GET home page. */
 router.get('/', login.validarSesion, function(req, res, next) {
@@ -8,6 +8,7 @@ router.get('/', login.validarSesion, function(req, res, next) {
   res.render('index');
 });
 
+/*
 async function webService (data) {
   var AD_User_ID = null;
   var AD_Org_ID = null;
@@ -45,5 +46,6 @@ async function webService (data) {
       </soapenv:Body>
     </soapenv:Envelope>`
 }
+*/
 
 module.exports = router;

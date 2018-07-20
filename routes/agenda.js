@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var login = require('./login')
+var login = require('./login').router
 var { pool } = require('../util/DB.js');
 var moment = require('moment');
 
@@ -53,6 +53,7 @@ async function getAgenda(org, dateTo) {
     dateTo = moment(dateTo, "YYYY-MM-DD").format("YYYY-MM-DD")
     var query = `
     select
+        ac.C_ContactActivity_ID,
         u.name as usuario,
         tipo.name as tipoactividad,
         to_char(ac.StartDate, 'yyyy/MM/dd') as fechainicio,
@@ -98,6 +99,7 @@ async function  getGestiones(org, datefrom, dateto) {
 
     var query = `
     select
+        ac.C_ContactActivity_ID,
         u.name as usuario,
         tipo.name as tipoactividad,
         to_char(ac.StartDate, 'yyyy/MM/dd') as fechainicio,

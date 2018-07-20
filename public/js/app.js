@@ -32,7 +32,11 @@ angular.module('app', ['ui.router'])
             .state('gestion_7dias', { //gestion_7dias
                 templateUrl: '/views/gestion/7dias.html',
                 controller: 'gestion_7dias'
-            })           
+            }) //crear_gestion
+            .state('crear_gestion', { //crear_gestion
+                templateUrl: '/views/gestion/crear_gestion.html',
+                controller: 'crear_gestion'
+            }) //crear_gestion            
     }])
     .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
         EventBus.addEventListener("newState", cambiar)
@@ -42,7 +46,7 @@ angular.module('app', ['ui.router'])
             $state.go(evt.target);
         }
 
-        loadTemplates($state, "oportunidad_listar", $http, $templateCache)
+        loadTemplates($state, "gestion_7dias", $http, $templateCache)
     }])
     .factory('oportunidad', [function(){
         return {
@@ -127,7 +131,8 @@ angular.module('app', ['ui.router'])
             {name: 'cliente', alias: 'Prospecto'},
             {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
             {name: 'siguiente_name', alias: 'Tipo'},                      
-            {name: 'usuario', alias: 'Usuario'}  
+            {name: 'usuario', alias: 'Usuario'},
+            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
         ])
 
     }])
@@ -144,8 +149,43 @@ angular.module('app', ['ui.router'])
             {name: 'cliente', alias: 'Prospecto'},
             {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
             {name: 'siguiente_name', alias: 'Tipo'},                      
-            {name: 'usuario', alias: 'Usuario'}  
+            {name: 'usuario', alias: 'Usuario'},
+            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
         ])
+
+    }])
+    .controller('crear_gestion', ["$scope", "oportunidad", function($scope, gestion){
+
+        $scope.gestion_actual = gestion.data.descripcion
+
+        $scope.crearGestion = async function (tipo_actividad, fecha_gestion, gestion, next_activity, next_activity_date) {
+            try {                
+                var data = {tipo_actividad, fecha_gestion, gestion, next_activity, next_activity_date }
+                console.log(data);
+
+                var result = await fetch("/nuevagestion", {
+                    credentials: "same-origin",
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+
+                if (result.ok)
+                    return alert("Gestion creada exitosamente");
+                else if (result.status === 401)
+                    return location.reload();
+                else
+                    throw new Error(await result.text() + " " + result.status)   
+            } catch (e) {
+                console.log(e)
+                alert(e.message)
+            }     
+        }
+
+        console.log(gestion.data);
 
     }])
     .controller('agenda_hoy', ["$scope", function($scope){
@@ -206,6 +246,10 @@ function boton_click(element) {
 
 function cargarSolicitudes(data) {
     EventBus.dispatch('newState', 'oportunidad_solicitudes', leer(data));
+}
+
+function sgtGestion(data) {
+    EventBus.dispatch('newState', 'crear_gestion', leer(data))
 }
 
 async function cargarTabla (id, url, arrColumnas) {

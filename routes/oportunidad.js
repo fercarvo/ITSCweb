@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var login = require('./login')
+var login = require('./login').router
 var { pool, url } = require('../util/DB.js');
 
 router.get('/oportunidad', login.validarSesion, async function (req, res, next) {

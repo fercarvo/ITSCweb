@@ -63,3 +63,7 @@ function requestWS(server, process, ctx, username, password, params) {
         })    
     })    
 }
+
+module.exports = {
+    requestWS
+}
