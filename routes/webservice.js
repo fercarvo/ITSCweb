@@ -25,13 +25,15 @@ function requestWS(server, process, ctx, username, password, params) {
                <_0:ClientID>${ctx.ad_client_id}</_0:ClientID>
                <_0:RoleID>${ctx.ad_role_id}</_0:RoleID>
                <_0:OrgID>${ctx.ad_org_id}</_0:OrgID>
-               <_0:WarehouseID>${ctx.m_warehouse_id}</_0:WarehouseID>
+               <_0:WarehouseID>${ctx.m_warehouse_id || 0}</_0:WarehouseID>
                <_0:stage>0</_0:stage>
             </_0:ADLoginRequest>
          </_0:ModelRunProcessRequest>
       </_0:runProcess>
    </soapenv:Body>
 </soapenv:Envelope>`
+
+console.log(soap)
 
     return new Promise((resolve, reject) => {
         var options = { 

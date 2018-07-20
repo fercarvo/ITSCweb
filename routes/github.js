@@ -9,12 +9,12 @@ router.post('/github/webhook', function(req, res, next) {
 
     //hmac.update(`sha=${github_header}`)
 
-    console.log('github webhooks...')
-    console.log(req.headers)
+    //console.log('github webhooks...')
+    //console.log(req.headers)
 
     //if (github_header && github_header === hmac.digest('hex')) {
-        console.log('Ejecutando...')
-        exec(project_refresh_scripts, (error, stdout, stderr) => {
+        //console.log('Ejecutando...')
+        /*exec(project_refresh_scripts, (error, stdout, stderr) => {
             if (error) {
               console.error(`exec error: ${error}`);
               return;
@@ -23,12 +23,12 @@ router.post('/github/webhook', function(req, res, next) {
             console.log(`stderr: ${stderr}`);
         });
 
-        res.send('Ok')
+        res.send('Ok')*/
     //} else {
     //    console.log('No autorizado...')
     //    res.status(401).send('Unauthorized')
     //}
-
+    res.send('Ok');
 })
 
 module.exports = router;

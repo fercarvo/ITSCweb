@@ -132,7 +132,10 @@ router.get('/referencia/actividad', login.validarSesion, async (req, res, next) 
         res.set('Cache-Control', 'private, max-age=1200');
         res.json(rows);
         
-    } catch (e) { next(e) }
+    } catch (e) { 
+        console.log(e)
+        next(e) 
+    }
 })
 
 router.post("/gestion/:id/nueva", login.validarSesion, async (req, res, next) => {
@@ -155,7 +158,7 @@ router.post("/gestion/:id/nueva", login.validarSesion, async (req, res, next) =>
             {column: "EndDate", val: f_siguiente_ac}
         ]
 
-        var params_test = [
+        /*var params_test = [
             {column: "C_Opportunity_ID", val: 0},
             {column: "ContactActivityType", val: tipo_actividad},
             {column: "C_ContactActivity_ID", val: actividad},
@@ -163,14 +166,13 @@ router.post("/gestion/:id/nueva", login.validarSesion, async (req, res, next) =>
             {column: "Description", val: descripcion},
             {column: "next_activity", val: siguiente_ac},
             {column: "EndDate", val: f_siguiente_ac}
-        ]
+        ]*/
 
-        console.log(user, password, params_test)
+        console.log(user, password, params)
 
-        var result = await requestWS(url, "CrearGestion", req.session_itsc, user, password, params_test)
-
-        console.log(result)
-        res.send(result);        
+        requestWS(url, "CrearGestion", req.session_itsc, user, password, params)
+            .then(data => res.send(data))
+            .catch(e => res.send("Error: " + e))
 
     } catch (e) {
         console.log(e) 
