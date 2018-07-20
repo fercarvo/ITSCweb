@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var login = require('./login').router
+var { getSecret } = require('./login')
+var { requestWS } = require('./webservice')
 var { pool, url } = require('../util/DB.js');
 
 router.get('/oportunidad', login.validarSesion, async function (req, res, next) {
@@ -122,100 +124,59 @@ router.get('/oportunidad/:id/solicitudes', login.validarSesion, async function (
     } catch (e) { next(e) }
 })
 
-router.post("/gestion", login.validarSesion, async (req, res, next) => {
+router.get('/referencia/actividad', login.validarSesion, async (req, res, next) => {
     try {
-        var oportunidad = req.body.oportunidad
-        var f_inicio = req.body.f_inicio
-        var comentarios = req.body.comentarios
-        var f_fin = req-body.f_fin
-        var siguienteac = req.body.siguienteac
-        var login = req.session_itsc
-
-        var result = await callWebService(login, oportunidad, f_inicio, comentarios, f_fin, siguienteac)
+        var query = `select * from vw_referencia where tipo = 'C_ContactActivity Type'`;
+        var { rows } = await pool.query(query);
         
-
-    } catch (e) { next(e) }    
+        res.set('Cache-Control', 'private, max-age=1200');
+        res.json(rows);
+        
+    } catch (e) { next(e) }
 })
 
-function callWebService(login, oportunidad, f_inicio, comentarios, f_fin, siguienteac) {
-    var soap = `
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:_0="http://idempiere.org/ADInterface/1_0">
-   <soapenv:Header/>
-   <soapenv:Body>
-      <_0:runProcess>
-         <_0:ModelRunProcessRequest>
-            <_0:ModelRunProcess>
-               <_0:serviceType>CrearGestion</_0:serviceType>
-               <_0:ParamValues>
-                  <_0:field column="C_Opportunity_ID">
-                     <_0:val>${oportunidad}</_0:val>
-                  </_0:field>
+router.post("/gestion/:id/nueva", login.validarSesion, async (req, res, next) => {
+    try {
+        var actividad = Number(req.params.id);
+        var tipo_actividad = req.body.tipo_actividad
+        var fecha = req.body.fecha
+        var descripcion = req.body.descripcion
+        var siguiente_ac = req.body.siguiente_ac
+        var f_siguiente_ac = req.body.f_siguiente_ac
 
-                  <_0:field column="StartDate">
-                     <_0:val>${f_inicio}</_0:val>
-                  </_0:field>
+        var {user, password} = await getSecret(req.session_itsc.ad_user_id);
 
-                  <_0:field column="Comments">
-                     <_0:val>${comentarios}</_0:val>
-                  </_0:field>
+        var params = [
+            {column: "C_ContactActivity_ID", val: actividad},
+            {column: "ContactActivityType", val: tipo_actividad},
+            {column: "StartDate", val: fecha},
+            {column: "Description", val: descripcion},
+            {column: "next_activity", val: siguiente_ac},
+            {column: "EndDate", val: f_siguiente_ac}
+        ]
 
-                  <_0:field column="EndDate">
-                     <_0:val>${f_fin}</_0:val>
-                  </_0:field>
+        var params_test = [
+            {column: "C_Opportunity_ID", val: 0},
+            {column: "ContactActivityType", val: tipo_actividad},
+            {column: "C_ContactActivity_ID", val: actividad},
+            {column: "StartDate", val: fecha},
+            {column: "Description", val: descripcion},
+            {column: "next_activity", val: siguiente_ac},
+            {column: "EndDate", val: f_siguiente_ac}
+        ]
 
-                  <_0:field column="next_activity">
-                     <_0:val>${siguienteac}</_0:val>
-                  </_0:field>
+        console.log(user, password, params_test)
 
-               </_0:ParamValues>
-            </_0:ModelRunProcess>
-            <_0:ADLoginRequest>
-               <_0:user>${login.username}</_0:user>
-               <_0:pass>${login.password}</_0:pass>
-               <_0:lang>es_EC</_0:lang>
-               <_0:ClientID>${login.ad_client_id}</_0:ClientID>
-               <_0:RoleID>${login.ad_role_id}</_0:RoleID>
-               <_0:OrgID>${login.ad_org_id}</_0:OrgID>
-               <_0:WarehouseID>${login.ad_warehouse_id}</_0:WarehouseID>
-               <_0:stage>0</_0:stage>
-            </_0:ADLoginRequest>
-         </_0:ModelRunProcessRequest>
-      </_0:runProcess>
-   </soapenv:Body>
-</soapenv:Envelope>`
+        var result = await requestWS(url, "CrearGestion", req.session_itsc, user, password, params_test)
 
-    return new Promise(resolve => {
-        var options = { 
-            method: 'POST',
-            url: `${url}/ADInterface/services/ModelADService`,
-            headers: { 
-                'Cache-Control': 'no-cache',
-                'Content-Type': 'text/xml; charset=utf-8' 
-            },
-            body: soap 
-        }
-    
-        request(options, function (error, response, body) {
-            if (error) {
-                return resolve({
-                    data: error.message, 
-                    resolved: false
-                })
-            } else if (response && (response.statusCode === 200 || response.statusCode === 302) ) {
-                return resolve({
-                    data: body,
-                    resolved: true
-                })
-            } else {
-                resolve({
-                    data:  response.statusCode + ' ' + response.statusMessage, 
-                    resolved: false
-                })                   
-            }                
-        })    
-    })    
-}
+        console.log(result)
+        res.send(result);        
 
+    } catch (e) {
+        console.log(e) 
+        next(new Error(e)) 
+    }    
+})
 
 
 function parseDBdata (data) {

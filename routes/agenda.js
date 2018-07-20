@@ -39,7 +39,6 @@ router.get('/gestiones', login.validarSesion, async function (req, res, next) { 
 })
 
 
-
 function parseDBdata (data) {
     return {
         fields: data.fields.map(f => f.name),

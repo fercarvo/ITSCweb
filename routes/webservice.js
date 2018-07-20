@@ -1,4 +1,5 @@
-var request = require('request')
+var request = require('request');
+var parseString = require('xml2js').parseString;
 
 function requestWS(server, process, ctx, username, password, params) {
     var soap = `
@@ -24,7 +25,7 @@ function requestWS(server, process, ctx, username, password, params) {
                <_0:ClientID>${ctx.ad_client_id}</_0:ClientID>
                <_0:RoleID>${ctx.ad_role_id}</_0:RoleID>
                <_0:OrgID>${ctx.ad_org_id}</_0:OrgID>
-               <_0:WarehouseID>${ctx.ad_warehouse_id}</_0:WarehouseID>
+               <_0:WarehouseID>${ctx.m_warehouse_id}</_0:WarehouseID>
                <_0:stage>0</_0:stage>
             </_0:ADLoginRequest>
          </_0:ModelRunProcessRequest>
@@ -32,33 +33,35 @@ function requestWS(server, process, ctx, username, password, params) {
    </soapenv:Body>
 </soapenv:Envelope>`
 
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
         var options = { 
             method: 'POST',
             url: `${server}/ADInterface/services/ModelADService`,
             headers: { 
-                'Cache-Control': 'no-cache',
                 'Content-Type': 'text/xml; charset=utf-8' 
             },
             body: soap 
         }
-    
+
         request(options, function (error, response, body) {
+            console.log(body)
+
             if (error) {
-                return resolve({
-                    data: error.message + ' servidor: ' + server.name, 
-                    resolved: false
-                })
-            } else if (response && (response.statusCode === 200 || response.statusCode === 302) ) {
-                return resolve({
-                    data: {server: server.name, body},
-                    resolved: true
-                })
+                return reject(error.message)
             } else {
-                resolve({
-                    data:  response.statusCode + ' ' + response.statusMessage + ' ' + server.name, 
-                    resolved: false
-                })                   
+                parseString(body, (err, result) => {
+                    if (err)
+                        return reject(err)
+
+                    result = result['soap:Envelope']['soap:Body'][0]['ns1:runProcessResponse'][0]
+                    result = result['RunProcessResponse'][0]
+                    var iserror = result['$']['IsError'] == "true"
+                    if (iserror || (response.statusCode !== 200 && response.statusCode !== 302)) {
+                        reject(result['Error'][0])
+                    } else {
+                        resolve(result['Summary'][0])
+                    }
+                })                 
             }                
         })    
     })    

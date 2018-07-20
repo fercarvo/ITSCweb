@@ -81,12 +81,13 @@ async function getSecret (AD_User_ID) {
 
     var query = `    
         select
-            user,
-            password,
+            c.user,
+            c.password
         from vistasapp.vw_login_datos c 
         where c.ad_user_id = ${Number(AD_User_ID)}::integer`;
-        
+    
     var { rows } = await client.query(query);
+
     client.release();
     return rows[0]
 }

@@ -22,21 +22,21 @@
             <label class="control-label col-sm-8">Tipo Actividad</label>
             <div class="col-sm-8">
                 <select required class="form-control" ng-model="tipo_actividad">
-                    <option value="AB">Cobranzas</option>
-                    <option value="AC">LLamada</option>
+                    <option selected disabled value=""></option>
+                    <option ng-repeat="ref in ref_actividad" value="{{ref.key}}">{{ref.value}}</option>
                 </select>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="control-label col-sm-8">Fecha Gestión</label>
+            <label class="control-label col-sm-8">Fecha</label>
             <div class="col-sm-8">
                 <input required class="form-control" ng-model="fecha_gestion" type="date">
             </div>
         </div>
 
         <div class="form-group">
-            <label class="control-label col-sm-8">Gestión</label>
+            <label class="control-label col-sm-8">Descripcion</label>
             <div class="col-sm-8">
                 <input required class="form-control" type="text" ng-model="gestion">
             </div>
@@ -46,14 +46,14 @@
             <label class="control-label col-sm-8">Siguiente Actividad</label>
             <div class="col-sm-8">
                 <select required class="form-control" ng-model="next_activity">
-                    <option value="AB">Cobranzas</option>
-                    <option value="AC">LLamada</option>
+                    <option selected disabled value=""></option>
+                    <option ng-repeat="ref in ref_actividad" value="{{ref.key}}">{{ref.value}}</option>
                 </select>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="control-label col-sm-8">Fecha Siguiente Gestión</label>
+            <label class="control-label col-sm-8">Fecha Siguiente Actividad</label>
             <div class="col-sm-8">
                 <input required class="form-control" type="date" ng-model="next_activity_date">
             </div>

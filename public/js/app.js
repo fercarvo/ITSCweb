@@ -154,31 +154,34 @@ angular.module('app', ['ui.router'])
         ])
 
     }])
-    .controller('crear_gestion', ["$scope", "oportunidad", function($scope, gestion){
+    .controller('crear_gestion', ["$scope", "oportunidad", "$http", function($scope, gestion, $http){
+
+        $scope.ref_actividad = []
+
+        $http.get('/referencia/actividad')
+            .then(res => {
+                $scope.ref_actividad = res.data;
+                //$scope.$apply();
+                console.log($scope.ref_actividad)
+            })
+            .catch(e => alert(e.status +" "+ e.statusText))
 
         $scope.gestion_actual = gestion.data.descripcion
 
-        $scope.crearGestion = async function (tipo_actividad, fecha_gestion, gestion, next_activity, next_activity_date) {
+        $scope.crearGestion = async function (tipo_actividad, fecha, descripcion, siguiente_ac, f_siguiente_ac) {
             try {                
-                var data = {tipo_actividad, fecha_gestion, gestion, next_activity, next_activity_date }
+                var data = {
+                    tipo_actividad, 
+                    fecha: moment(fecha).format('YYYY-MM-DD'), 
+                    descripcion, 
+                    siguiente_ac, 
+                    f_siguiente_ac: moment(f_siguiente_ac).format('YYYY-MM-DD') 
+                }
+
+                var { data } = await $http.post(`/gestion/${gestion.data.c_contactactivity_id}/nueva`, data);
                 console.log(data);
-
-                var result = await fetch(`/gestion/${gestion.data.c_contactactivity_id}/nueva`, {
-                    credentials: "same-origin",
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                })
-
-                if (result.ok)
-                    return alert("Gestion creada exitosamente");
-                else if (result.status === 401)
-                    return location.reload();
-                else
-                    throw new Error(await result.text() + " " + result.status)   
+                alert(data)
+                
             } catch (e) {
                 console.log(e)
                 alert(e.message)
