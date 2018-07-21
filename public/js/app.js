@@ -64,10 +64,6 @@ angular.module('app', ['ui.router'])
             }
         }
     }])
-    /*.controller("oportunidad" ,["$state", "$scope", function($state, $scope){
-        console.log("holaaa")
-        $state.go("oportunidad.listar")
-    }])*/
     .controller("oportunidad_listar", ["$scope", "$state", "$compile", "$scope", function($scope, $state, $compile, $scope){
         console.log("Hola oportunidad")
 
@@ -184,7 +180,7 @@ angular.module('app', ['ui.router'])
                 
             } catch (e) {
                 console.log(e)
-                alert(e.message)
+                alert("Error crear gestión");)
             }     
         }
 

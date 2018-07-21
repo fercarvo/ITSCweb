@@ -33,8 +33,6 @@ function requestWS(server, process, ctx, username, password, params) {
    </soapenv:Body>
 </soapenv:Envelope>`
 
-console.log(soap)
-
     return new Promise((resolve, reject) => {
         var options = { 
             method: 'POST',
@@ -58,10 +56,15 @@ console.log(soap)
                     result = result['soap:Envelope']['soap:Body'][0]['ns1:runProcessResponse'][0]
                     result = result['RunProcessResponse'][0]
                     var iserror = result['$']['IsError'] == "true"
-                    if (iserror || (response.statusCode !== 200 && response.statusCode !== 302)) {
-                        reject(result['Error'][0])
+
+                    if (response.statusCode !== 200 && response.statusCode !== 302) {
+                        reject(response.statusCode +" "+ response.statusMessage)
                     } else {
-                        resolve(result['Summary'][0])
+                        if (iserror || (response.statusCode !== 200 && response.statusCode !== 302)) {
+                            reject(result['Error'][0])
+                        } else {
+                            resolve(result['Summary'][0])
+                        }
                     }
                 })                 
             }                
