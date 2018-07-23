@@ -150,19 +150,23 @@ angular.module('app', ['ui.router'])
         ])
 
     }])
-    .controller('crear_gestion', ["$scope", "oportunidad", "$http", function($scope, gestion, $http){
-
-        $scope.ref_actividad = []
+    .controller('crear_gestion', ["$scope", "oportunidad", "$http", "$state", function($scope, gestion, $http, $state){
 
         $http.get('/referencia/actividad')
             .then(res => {
                 $scope.ref_actividad = res.data;
-                //$scope.$apply();
-                console.log($scope.ref_actividad)
+                $scope.tipo_actividad = $scope.ref_actividad.find(el => {
+                    return el.value == gestion.data.siguiente_name
+                }).key
+
             })
             .catch(e => alert(e.status +" "+ e.statusText))
 
+        $scope.fecha_gestion = new Date();
+
         $scope.gestion_actual = gestion.data.descripcion
+
+        $scope.cancelar = () => $state.go("gestion_7dias");
 
         $scope.crearGestion = async function (tipo_actividad, fecha, descripcion, siguiente_ac, f_siguiente_ac) {
             try {                
@@ -180,7 +184,7 @@ angular.module('app', ['ui.router'])
                 
             } catch (e) {
                 console.log(e)
-                alert("Error crear gestión");)
+                alert("Error crear gestión")
             }     
         }
 

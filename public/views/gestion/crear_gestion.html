@@ -1,6 +1,6 @@
 <ol class="breadcrumb">
-    <li ui-sref-active="active" class="breadcrumb-item">
-        <a >Gestiones / Crear Siguiente Gestión</a>
+    <li ui-sref-active="active" class="breadcrumb-item" >
+        <a ng-click="cancelar()">Gestiones / Crear Siguiente Gestión</a>
     </li>
 </ol>
 <div>
@@ -21,9 +21,10 @@
         <div class="form-group">
             <label class="control-label col-sm-8">Tipo Actividad</label>
             <div class="col-sm-8">
-                <select required class="form-control" ng-model="tipo_actividad">
-                    <option selected disabled value=""></option>
-                    <option ng-repeat="ref in ref_actividad" value="{{ref.key}}">{{ref.value}}</option>
+                <select required class="form-control" 
+                    ng-model="tipo_actividad"
+                    ng-init="actual_tipo"
+                    ng-options="ref.key as ref.value for ref in ref_actividad">
                 </select>
             </div>
         </div>
@@ -61,7 +62,7 @@
 
         <div class="form-group col-sm-8">
             <button type="submit" class="btn btn-info">Aceptar</button>
-            <button type="reset" class="btn btn-default">Cancelar</button>
+            <button type="button" ng-click="cancelar()" class="btn btn-default">Cancelar</button>
         </div>
     </form>
 </div>
