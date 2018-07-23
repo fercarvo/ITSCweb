@@ -182,10 +182,7 @@ angular.module('app', ['ui.router'])
                 console.log(data);
                 alert(data)
                 
-            } catch (e) {
-                console.log(e)
-                alert("Error crear gestión")
-            }     
+            } catch (e) { console.log(e); alert ("error, crear gestion"); }     
         }
 
         console.log(gestion.data);
