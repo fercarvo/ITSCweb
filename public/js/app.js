@@ -155,10 +155,13 @@ angular.module('app', ['ui.router'])
         $http.get('/referencia/actividad')
             .then(res => {
                 $scope.ref_actividad = res.data;
+
+                if (!gestion.data.siguiente_name)
+                    return;
+
                 $scope.tipo_actividad = $scope.ref_actividad.find(el => {
                     return el.value == gestion.data.siguiente_name
                 }).key
-
             })
             .catch(e => alert(e.status +" "+ e.statusText))
 
