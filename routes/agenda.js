@@ -85,7 +85,7 @@ async function getAgenda(org, dateTo, usuario) {
     left join AD_User u on u.AD_User_ID = ac.AD_User_ID
     left join AD_User repc on repc.AD_User_ID = ac.SalesRep_ID
     where (${org})::numeric in (ac.ad_org_id, 0)
-        and ac.ad_user_id = (${usuario})::integer
+        and ac.createdby = (${usuario})::integer
         and ac.isactive = 'Y'
         and ac.IsComplete = 'N' 
         and date(ac.EndDate) <= date('${dateTo}')`;
@@ -134,7 +134,7 @@ async function  getGestiones(org, datefrom, dateto, usuario) {
     where (${org})::numeric in (ac.ad_org_id, 0)
         and ac.isactive = 'Y'
         and date(ac.StartDate) between date('${datefrom}') and date('${dateto}')
-        and ac.ad_user_id = (${usuario})::integer
+        and ac.createdby = (${usuario})::integer
     order by fechainicio`;
 
     var data = await pool.query(query);    
