@@ -41,6 +41,22 @@ router.post('/login', async function (req, res, next) {
         return res.redirect(`/login?msg=${encodeURIComponent('Por favor, envie datos correctos')}`);
 
     try {
+
+        if (req.body.ultimo_login || req.body.ultimo_login === 'Y') {
+            var data_last_log = await getLastLogin(req.body.usuario, req.body.clave);
+            
+            if (data_last_log.length === 0) {
+                return res.redirect(`/login?msg=${encodeURIComponent('Usuario/Clave Incorrectos')}`);
+            } else {
+                data_last_log = data_last_log[0]
+                var data_login = await createPayload(req.body.usuario, req.body.clave, data_last_log.ad_client_id, data_last_log.ad_role_id, data_last_log.ad_org_id)
+                var token = createToken(data_login)
+
+                res.cookie('session_itsc', token,  { maxAge: 1000*60*60*12, httpOnly: true})
+                res.redirect('/')
+            }
+        }
+
         var data = await checkUsuario(req.body.usuario, req.body.clave)
 
         if (data.length === 0) {
@@ -111,6 +127,28 @@ async function checkUsuario (usuario, clave) {
         from vistasapp.vw_login_datos c 
         where c.user = '${usuario}' and c.password = '${clave}'`;
         
+    var { rows } = await client.query(query);
+    client.release();
+    return rows
+}
+
+async function getLastLogin (usuario, clave) {
+    var client = await pool.connect()
+    var query = `
+    select 
+        s.createdby as AD_User_ID, 
+        s.ad_client_id, 
+        s.ad_org_id, 
+        s.ad_role_id
+    from AD_Session s
+    inner join vistasapp.vw_login_datos lg on lg.ad_user_id = s.createdby
+    where 
+        lg.user = ('${usuario}')::text 
+        and lg.password = ('${clave}')::text
+    order by created desc
+    limit 1
+    `;
+ 
     var { rows } = await client.query(query);
     client.release();
     return rows
