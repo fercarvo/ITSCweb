@@ -13,8 +13,9 @@ router.get('/agenda', login.validarSesion, async function (req, res, next) {
     try {
         var org = req.session_itsc.ad_org_id;
         var dateto = req.query.dateto || moment().format('YYYY-MM-DD')
+        var usuario = req.session_itsc.ad_user_id
 
-        var data = await getAgenda(org, dateto)
+        var data = await getAgenda(org, dateto, usuario)
         res.json(data)
 
     } catch (e) {
@@ -47,7 +48,7 @@ function parseDBdata (data) {
 }
 
 
-async function getAgenda(org, dateTo) {
+async function getAgenda(org, dateTo, usuario) {
     org = Number(org);
     dateTo = moment(dateTo, "YYYY-MM-DD").format("YYYY-MM-DD")
     var query = `
@@ -83,6 +84,7 @@ async function getAgenda(org, dateTo) {
     left join AD_User u on u.AD_User_ID = ac.AD_User_ID
     left join AD_User repc on repc.AD_User_ID = ac.SalesRep_ID
     where (${org})::numeric in (ac.ad_org_id, 0)
+        and ac.ad_user_id = (${usuario})::numeric
         and ac.isactive = 'Y'
         and ac.IsComplete = 'N' 
         and date(ac.EndDate) <= date('${dateTo}')`;
