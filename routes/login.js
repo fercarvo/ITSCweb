@@ -24,6 +24,7 @@ router.validarSesion = function (req, res, next) {
         next()
 
     } catch (e) {
+        console.log(req.url)
         if (req.url === '/')
             return res.redirect('/login/')
         
@@ -42,7 +43,9 @@ router.post('/login', async function (req, res, next) {
 
     try {
 
-        if (req.body.ultimo_login || req.body.ultimo_login === 'Y') {
+        console.log(req.body.ultimo_login)
+
+        if (req.body.ultimo_login !== 'Y') {
             var data_last_log = await getLastLogin(req.body.usuario, req.body.clave);
             
             if (data_last_log.length === 0) {
@@ -92,6 +95,7 @@ router.post('/rol', async function (req, res, next) {
     }    
 })
 
+//Recibe un ID de usuario y retorna sus credenciales
 async function getSecret (AD_User_ID) {
     var client = await pool.connect()
 
@@ -108,6 +112,7 @@ async function getSecret (AD_User_ID) {
     return rows[0]
 }
 
+//Recibe un usuario y clave, retorna los datos de rol asociados a los mismos
 async function checkUsuario (usuario, clave) {
     var client = await pool.connect()
 
@@ -156,30 +161,24 @@ async function getLastLogin (usuario, clave) {
 
 async function createPayload (usuario, clave, ad_client_id, ad_role_id, ad_org_id, m_warehouse_id) {
     var client = await pool.connect()
-    var warehouse = Number.isInteger(Number(m_warehouse_id)) ? `and w.m_warehouse_id = ${m_warehouse_id}::numeric` : ""
-    var query = `select distinct
-        u.AD_User_ID,
-        u.name, 
-        u.email,
-        c.AD_Client_ID,
-        c.name as grupo,
-        r.ad_role_id,
-        r.name as rol,
-        org.AD_Org_ID,
-        org.name as organizacion,
-        w.m_warehouse_id,
-        w.name as warehouse
-    from vistasapp.vw_login_grupoempresarial c
-    inner join ad_user u on u.ad_user_id = c.ad_user_id
-    inner join vistasapp.vw_login_rol r on r.ad_client_id = c.ad_client_id
-    inner join vistasapp.vw_login_organizacion org on org.ad_role_id = r.ad_role_id
-    left join m_warehouse w on w.ad_org_id = org.ad_org_id and w.isactive = 'Y'
-    where u.isactive = 'Y' 
-        and c.name != 'GardenWorld' 
-        and c.user = '${usuario}' and c.password = '${clave}'
-        and c.ad_client_id = ${Number(ad_client_id)}::numeric
-        and r.ad_role_id = ${Number(ad_role_id)}::numeric
-        and org.AD_Org_ID = ${Number(ad_org_id)}::numeric
+    var warehouse = Number.isInteger(Number(m_warehouse_id)) ? `and v.m_warehouse_id = ${m_warehouse_id}::numeric` : ""
+    var query = `select
+        v.AD_User_ID,
+        v.name, 
+        v.email,
+        v.AD_Client_ID,
+        v.grupo,
+        v.ad_role_id,
+        v.rol,
+        v.AD_Org_ID,
+        v.organizacion,
+        v.m_warehouse_id,
+        v.warehouse
+    from vistasapp.vw_login_datos v
+    where v.user = ('${usuario}')::text and v.password = ('${clave}')::text
+        and v.ad_client_id = ${Number(ad_client_id)}::numeric
+        and v.ad_role_id = ${Number(ad_role_id)}::numeric
+        and v.AD_Org_ID = ${Number(ad_org_id)}::numeric
         ${warehouse}`;
     
     var { rows } = await client.query(query);
