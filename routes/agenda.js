@@ -13,8 +13,9 @@ router.get('/agenda', login.validarSesion, async function (req, res, next) {
     try {
         var org = req.session_itsc.ad_org_id;
         var dateto = req.query.dateto || moment().format('YYYY-MM-DD')
+        var usuario = req.session_itsc.ad_user_id
 
-        var data = await getAgenda(org, dateto)
+        var data = await getAgenda(org, dateto, usuario)
         res.json(data)
 
     } catch (e) {
@@ -26,11 +27,12 @@ router.get('/agenda', login.validarSesion, async function (req, res, next) {
 router.get('/gestiones', login.validarSesion, async function (req, res, next) { //dos_semanas
     try {
         var org = req.session_itsc.ad_org_id;
+        var usuario = req.session_itsc.ad_user_id;
 
         var datefrom = req.query.datefrom || moment('1990-01-01').format('YYYY-MM-DD')
         var dateto = req.query.dateto || moment().format('YYYY-MM-DD')
 
-        var data = await getGestiones(org, datefrom, dateto)
+        var data = await getGestiones(org, datefrom, dateto, usuario)
         res.json(data)
 
     } catch (e) {
@@ -47,7 +49,7 @@ function parseDBdata (data) {
 }
 
 
-async function getAgenda(org, dateTo) {
+async function getAgenda(org, dateTo, usuario) {
     org = Number(org);
     dateTo = moment(dateTo, "YYYY-MM-DD").format("YYYY-MM-DD")
     var query = `
@@ -83,6 +85,7 @@ async function getAgenda(org, dateTo) {
     left join AD_User u on u.AD_User_ID = ac.AD_User_ID
     left join AD_User repc on repc.AD_User_ID = ac.SalesRep_ID
     where (${org})::numeric in (ac.ad_org_id, 0)
+        and ac.createdby = (${usuario})::integer
         and ac.isactive = 'Y'
         and ac.IsComplete = 'N' 
         and date(ac.EndDate) <= date('${dateTo}')`;
@@ -91,7 +94,7 @@ async function getAgenda(org, dateTo) {
     return parseDBdata(data);
 }
 
-async function  getGestiones(org, datefrom, dateto) {
+async function  getGestiones(org, datefrom, dateto, usuario) {
     org = Number(org);
     datefrom = moment(datefrom, "YYYY-MM-DD").format("YYYY-MM-DD")
     dateto = moment(dateto, "YYYY-MM-DD").format("YYYY-MM-DD")
@@ -131,6 +134,7 @@ async function  getGestiones(org, datefrom, dateto) {
     where (${org})::numeric in (ac.ad_org_id, 0)
         and ac.isactive = 'Y'
         and date(ac.StartDate) between date('${datefrom}') and date('${dateto}')
+        and ac.createdby = (${usuario})::integer
     order by fechainicio`;
 
     var data = await pool.query(query);    

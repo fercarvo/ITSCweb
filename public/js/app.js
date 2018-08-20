@@ -92,7 +92,8 @@ angular.module('app', ['ui.router'])
                 {name: 'siguiente_name', alias: 'Tipo Siguiente'},
                 {name: 'siguiente_fecha', alias: 'Fecha Siguiente'},
                 {name: 'estado', alias: 'Estado'},
-                {name: 'usuario', alias: 'Usuario'}  
+                {name: 'usuario', alias: 'Usuario'},
+                {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
             ])
         } else {
 
@@ -201,7 +202,8 @@ angular.module('app', ['ui.router'])
             {name: 'tipoactividad', alias: 'Última Gestion'},
             {name: 'fechainicio', alias: 'Fecha'},
             {name: 'descripcion', alias: 'Descripciòn'},
-            {name: 'usuario', alias: 'Usuario'}  
+            {name: 'usuario', alias: 'Usuario'},
+            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
         ])
 
     }])
@@ -215,7 +217,8 @@ angular.module('app', ['ui.router'])
             {name: 'tipoactividad', alias: 'Última Gestion'},
             {name: 'fechainicio', alias: 'Fecha'},
             {name: 'descripcion', alias: 'Descripciòn'},
-            {name: 'usuario', alias: 'Usuario'}  
+            {name: 'usuario', alias: 'Usuario'},
+            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
         ])
 
     }])
