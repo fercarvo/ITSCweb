@@ -44,7 +44,6 @@ function requestWS(server, process, ctx, username, password, params) {
         }
 
         request(options, function (error, response, body) {
-            console.log(body)
 
             if (error) {
                 return reject(error.message)
@@ -53,14 +52,16 @@ function requestWS(server, process, ctx, username, password, params) {
                     if (err)
                         return reject(err)
 
-                    result = result['soap:Envelope']['soap:Body'][0]['ns1:runProcessResponse'][0]
-                    result = result['RunProcessResponse'][0]
-                    var iserror = result['$']['IsError'] == "true"
-
+                    //IF HTTP Errors
                     if (response.statusCode !== 200 && response.statusCode !== 302) {
                         reject(response.statusCode +" "+ response.statusMessage)
+
                     } else {
-                        if (iserror || (response.statusCode !== 200 && response.statusCode !== 302)) {
+                        result = result['soap:Envelope']['soap:Body'][0]['ns1:runProcessResponse'][0]
+                        result = result['RunProcessResponse'][0]
+                        var iserror = result['$']['IsError'] == "true"
+
+                        if (iserror) {
                             reject(result['Error'][0])
                         } else {
                             resolve(result['Summary'][0])

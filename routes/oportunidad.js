@@ -39,6 +39,9 @@ router.get('/oportunidad', login.validarSesion, async function (req, res, next) 
     } catch (e) { next(e) }
 })
 
+/**
+ * Ruta que carga todas las actividades de una oportunidad dada
+ */
 router.get('/oportunidad/:id/actividades', login.validarSesion, async function (req, res, next) {
     try {
         var org = req.session_itsc.ad_org_id;
@@ -159,24 +162,11 @@ router.post("/gestion/:id/nueva", login.validarSesion, async (req, res, next) =>
             {column: "EndDate", val: f_siguiente_ac}
         ]
 
-        /*var params_test = [
-            {column: "C_Opportunity_ID", val: 0},
-            {column: "ContactActivityType", val: tipo_actividad},
-            {column: "C_ContactActivity_ID", val: actividad},
-            {column: "StartDate", val: fecha},
-            {column: "Description", val: descripcion},
-            {column: "next_activity", val: siguiente_ac},
-            {column: "EndDate", val: f_siguiente_ac}
-        ]*/
-
-        console.log(user, password, params)
-
-        requestWS(url, "CrearGestion", req.session_itsc, user, password, params)
-            .then(data => res.send(data))
-            .catch(e => res.send("Error: " + e))
+        var data = await requestWS(url, "CrearGestion", req.session_itsc, user, password, params)
+        res.send(data);
 
     } catch (e) {
-        console.log(e) 
+        console.log(e)
         next(new Error(e)) 
     }    
 })

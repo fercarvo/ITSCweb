@@ -17,7 +17,7 @@ angular.module('app', ['ui.router'])
                 templateUrl: '/views/oportunidad/solicitudes.html',
                 controller: 'oportunidad_solicitudes'
             })
-            .state('agenda_hoy', { //agenda_dos_semanas
+            .state('agenda_hoy', { //agenda_equipo
                 templateUrl: '/views/agenda/ultimas.html',
                 controller: 'agenda_hoy'
             })
@@ -36,7 +36,15 @@ angular.module('app', ['ui.router'])
             /*.state('crear_gestion', { //crear_gestion
                 //templateUrl: '/views/gestion/crear_gestion.html',
                 controller: 'crear_gestion'
-            }) //crear_gestion*/            
+            }) //crear_gestion*/
+            .state('agenda_equipo_hoy', { //agenda_equipo
+                templateUrl: '/views/agendaequipo/hoy.html',
+                controller: 'agenda_equipo_hoy'
+            })
+            .state('agenda_equipo_7dias', { //agenda_equipo
+                templateUrl: '/views/agendaequipo/7dias.html',
+                controller: 'agenda_equipo_7dias'
+            })            
     }])
     .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
         EventBus.addEventListener("newState", cambiar)
@@ -92,8 +100,7 @@ angular.module('app', ['ui.router'])
                 {name: 'siguiente_name', alias: 'Tipo Siguiente'},
                 {name: 'siguiente_fecha', alias: 'Fecha Siguiente'},
                 {name: 'estado', alias: 'Estado'},
-                {name: 'usuario', alias: 'Usuario'},
-                {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
+                {name: 'usuario', alias: 'Usuario'}
             ])
         } else {
 
@@ -155,7 +162,15 @@ angular.module('app', ['ui.router'])
 
         EventBus.addEventListener("crear_gestion_event", go)
 
+        $scope.error = {
+            show: false,
+            msg: null
+        };
+
         function go(evt, actual_gestion) {
+
+            $scope.error.show = false
+            $scope.error.msg = null
 
             $("#siguiente_gestion_modal").modal('show')
 
@@ -187,7 +202,10 @@ angular.module('app', ['ui.router'])
             }
 
             $scope.crearGestion = async function (tipo_actividad, fecha, descripcion, siguiente_ac, f_siguiente_ac) {
-                try {                
+                try {
+                    $scope.error.show = false
+                    $scope.error.msg = null
+                    
                     var params = {
                         tipo_actividad, 
                         fecha: moment(fecha).format('YYYY-MM-DD'), 
@@ -208,7 +226,14 @@ angular.module('app', ['ui.router'])
 
                     $("#siguiente_gestion_modal").modal('hide')
                     
-                } catch (e) { console.log(e); alert ("error, crear gestion"); }   
+                } catch (e) { 
+                    console.log(e.data); 
+                    alert ("error, crear gestion"); 
+                    $scope.error.show = true
+                    $scope.error.msg = e.data
+
+                    $scope.$apply()
+                }   
             }
 
             console.log(actual_gestion);
@@ -244,6 +269,34 @@ angular.module('app', ['ui.router'])
             {name: 'descripcion', alias: 'Descripciòn'},
             {name: 'usuario', alias: 'Usuario'},
             {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
+        ])
+
+    }])
+    .controller('agenda_equipo_hoy', [function (){
+        
+        cargarTabla('agenda_equipo_hoy', `/agenda/?dateto=${moment().format("YYYY-MM-DD")}&tipo=equipo`, [
+            {name: 'usuario', alias: 'Usuario'},
+            {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
+            {name: 'siguiente_name', alias: 'Tipo'}, //descripcion oportunidad, cliente, oportunidad_descripcion                          
+            {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
+            {name: 'cliente', alias: 'Prospecto'},
+            {name: 'tipoactividad', alias: 'Última Gestion'},
+            {name: 'fechainicio', alias: 'Fecha'},
+            {name: 'descripcion', alias: 'Descripciòn'}            
+        ])
+
+    }])
+    .controller('agenda_equipo_7dias', [function (){
+        
+        cargarTabla('agenda_equipo_7dias', `/agenda/?dateto=${moment().add(7, 'days').format("YYYY-MM-DD")}&tipo=equipo`, [
+            {name: 'usuario', alias: 'Usuario'},
+            {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
+            {name: 'siguiente_name', alias: 'Tipo'}, //descripcion oportunidad, cliente, oportunidad_descripcion                          
+            {name: 'oportunidad_descripcion', alias: 'Oportunidad'},
+            {name: 'cliente', alias: 'Prospecto'},
+            {name: 'tipoactividad', alias: 'Última Gestion'},
+            {name: 'fechainicio', alias: 'Fecha'},
+            {name: 'descripcion', alias: 'Descripciòn'}
         ])
 
     }])
@@ -314,7 +367,24 @@ async function cargarTabla (id, url, arrColumnas) {
             </tbody>
         `;
         
-        $(`#${id}`).DataTable({ responsive: true })
+        $(`#${id}`).DataTable({ 
+            responsive: true,
+            language: {
+                "emptyTable":   	"No existe información para mostrar",
+                "info":         	"Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty":    	"No existe información para mostrar",
+                "infoFiltered": 	"(Filtrado de _MAX_ registros)",
+                "lengthMenu":   	"Mostrar _MENU_ registros por página",
+                "search":       	"Buscar",
+                "zeroRecords":  	"La busqueda no encontró resultados",
+                "paginate": {
+                    "first":    	"Primero",
+                    "previous": 	"Anterior",
+                    "next":     	"Siguiente",
+                    "last":     	"Último"
+                }
+            }
+        })
 
     } catch (e) {
         console.log(e);

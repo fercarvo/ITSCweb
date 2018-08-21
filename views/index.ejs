@@ -60,9 +60,24 @@
           </a>
           <ul class="sidenav-second-level collapse" id="agenda_coll">
             <li ui-sref-active-parent="active" ui-sref="agenda_hoy">
-              <a >Hoy</a>
+              <a >Hasta Hoy</a>
             </li>
             <li ui-sref-active-parent="active" ui-sref="agenda_7dias">
+              <a >Prox. 7 dìas</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item" ui-sref-active="active" data-toggle="tooltip" data-placement="right" title="Agenda Equipo">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#agenda_equipo_coll" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-sitemap"></i>
+            <span class="nav-link-text">Agenda Equipo</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="agenda_equipo_coll">
+            <li ui-sref-active-parent="active" ui-sref="agenda_equipo_hoy">
+              <a >Hasta Hoy</a>
+            </li>
+            <li ui-sref-active-parent="active" ui-sref="agenda_equipo_7dias">
               <a >Prox. 7 dìas</a>
             </li>
           </ul>
@@ -125,7 +140,11 @@
                 }
             </style>
             <form id="crear_siguiente_gestion" ng-submit="crearGestion(tipo_actividad, fecha_gestion, gestion, next_activity, next_activity_date)">
-        
+
+                <div ng-show="error.show" class="form-group">
+                  <p style="color: red;">{{error.msg}}</p>
+                </div>
+
                 <div class="form-group">
                     <label class="control-label"> Gestión Actual </label>
                     <div class="">
