@@ -45,6 +45,7 @@ router.get('/oportunidad/:id/actividades', login.validarSesion, async function (
         var oportunidad = req.params.id || -1;
         var query = `
         select
+            ac.C_ContactActivity_ID,
             u.name as usuario,
             tipo.name as tipoactividad,
             to_char(ac.StartDate, 'yyyy/MM/dd') as fechainicio,

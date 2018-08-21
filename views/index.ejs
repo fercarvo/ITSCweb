@@ -68,40 +68,6 @@
           </ul>
         </li>
 
-
-        <!--
-        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Menu Levels">
-          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti" data-parent="#exampleAccordion">
-            <i class="fa fa-fw fa-sitemap"></i>
-            <span class="nav-link-text">Menu Levels</span>
-          </a>
-          <ul class="sidenav-second-level collapse" id="collapseMulti">
-            <li>
-              <a href="#">Second Level Item</a>
-            </li>
-            <li>
-              <a href="#">Second Level Item</a>
-            </li>
-            <li>
-              <a href="#">Second Level Item</a>
-            </li>
-            <li>
-              <a class="nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMulti2">Third Level</a>
-              <ul class="sidenav-third-level collapse" id="collapseMulti2">
-                <li>
-                  <a href="#">Third Level Item</a>
-                </li>
-                <li>
-                  <a href="#">Third Level Item</a>
-                </li>
-                <li>
-                  <a href="#">Third Level Item</a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-        -->
       </ul>
       <ul class="navbar-nav sidenav-toggler">
         <li class="nav-item">
@@ -143,16 +109,96 @@
       <i class="fa fa-angle-up"></i>
     </a>
   </div>
+
+
+  <div class="modal fade" id="siguiente_gestion_modal" ng-controller="crear_gestion" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5>Crear Siguiente Gestión</h5>               
+        </div>
+
+        <div class="modal-body">
+            <style>
+                .form-group label {
+                    font-weight: bold;
+                }
+            </style>
+            <form id="crear_siguiente_gestion" ng-submit="crearGestion(tipo_actividad, fecha_gestion, gestion, next_activity, next_activity_date)">
+        
+                <div class="form-group">
+                    <label class="control-label"> Gestión Actual </label>
+                    <div class="">
+                        <input readonly class="form-control" type="text" ng-model="gestion_actual">
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label class="control-label ">Tipo Actividad</label>
+                    <div class="">
+                        <select required class="form-control" ng-model="tipo_actividad">
+                            <option selected disabled value=""></option>
+                            <option ng-repeat="ref in ref_actividad" value="{{ref.key}}">{{ref.value}}</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label class="control-label ">Fecha</label>
+                    <div class="">
+                        <input required class="form-control" ng-model="fecha_gestion" type="date">
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label class="control-label ">Descripcion</label>
+                    <div class="">
+                        <input required class="form-control" type="text" ng-model="gestion">
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label class="control-label ">Siguiente Actividad</label>
+                    <div class="">
+                        <select required class="form-control" ng-model="next_activity">
+                            <option selected="selected" disabled value></option>
+                            <option ng-repeat="ref in ref_actividad" value="{{ref.key}}">{{ref.value}}</option>
+                        </select>
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label class="control-label ">Fecha Siguiente Actividad</label>
+                    <div class="">
+                        <input required class="form-control" type="date" ng-model="next_activity_date">
+                    </div>
+                </div>
+        
+                <!--<div class="form-group ">
+                    <button type="submit" class="btn btn-info">Aceptar</button>
+                    <button type="button" ng-click="cancelar()" class="btn btn-default">Cancelar</button>
+                </div>-->
+            </form>            
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-info" form="crear_siguiente_gestion">Aceptar</button>
+            <button type="button" ng-click="cancelar()" class="btn btn-default" form="crear_siguiente_gestion">Cancelar</button>
+        </div>
+            
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
 <script src="/js/EventBus.js"></script>
 <script src="/vendor/moment.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.10/angular.min.js"></script>
-<script src="https://unpkg.com/@uirouter/angularjs@1.0.18/release/angular-ui-router.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" ></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" ></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" ></script>
+<script src="/vendor/angular.min.js"></script>
+<script src="/vendor/angular-ui-router.min.js"></script>
+<script src="/vendor/jquery-3.3.1.slim.min.js" ></script>
+<script src="/vendor/popper.min.js" ></script>
+<script src="/vendor/bootstrap.min.js" ></script>
 
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.2.1/js/dataTables.responsive.min.js"></script>
+<script src="/vendor/jquery.dataTables.min.js"></script>
+<script src="/vendor/dataTables.responsive.min.js"></script>
 <script src="js/sb-admin.js"></script>
 <script src="/js/app.js"></script>
 

@@ -33,10 +33,10 @@ angular.module('app', ['ui.router'])
                 templateUrl: '/views/gestion/7dias.html',
                 controller: 'gestion_7dias'
             }) //crear_gestion
-            .state('crear_gestion', { //crear_gestion
-                templateUrl: '/views/gestion/crear_gestion.html',
+            /*.state('crear_gestion', { //crear_gestion
+                //templateUrl: '/views/gestion/crear_gestion.html',
                 controller: 'crear_gestion'
-            }) //crear_gestion            
+            }) //crear_gestion*/            
     }])
     .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
         EventBus.addEventListener("newState", cambiar)
@@ -153,43 +153,68 @@ angular.module('app', ['ui.router'])
     }])
     .controller('crear_gestion', ["$scope", "oportunidad", "$http", "$state", function($scope, gestion, $http, $state){
 
-        $http.get('/referencia/actividad')
-            .then(res => {
-                $scope.ref_actividad = res.data;
+        EventBus.addEventListener("crear_gestion_event", go)
 
-                if (!gestion.data.siguiente_name)
-                    return;
+        function go(evt, actual_gestion) {
 
-                $scope.tipo_actividad = $scope.ref_actividad.find(el => {
-                    return el.value == gestion.data.siguiente_name
-                }).key
-            })
-            .catch(e => alert(e.status +" "+ e.statusText))
+            $("#siguiente_gestion_modal").modal('show')
 
-        $scope.fecha_gestion = new Date();
+            $http.get('/referencia/actividad', { cache: true})
+                .then(res => {
+                    $scope.ref_actividad = res.data;
 
-        $scope.gestion_actual = gestion.data.descripcion
+                    if (!actual_gestion.siguiente_name)
+                        return;                                         
 
-        $scope.cancelar = () => $state.go("gestion_7dias");
+                    $scope.tipo_actividad = $scope.ref_actividad.find(el => {
+                        return el.value == actual_gestion.siguiente_name
+                    }).key
+                })
+                .catch(e => alert(e.status +" "+ e.statusText))
 
-        $scope.crearGestion = async function (tipo_actividad, fecha, descripcion, siguiente_ac, f_siguiente_ac) {
-            try {                
-                var data = {
-                    tipo_actividad, 
-                    fecha: moment(fecha).format('YYYY-MM-DD'), 
-                    descripcion, 
-                    siguiente_ac, 
-                    f_siguiente_ac: moment(f_siguiente_ac).format('YYYY-MM-DD') 
-                }
+            $scope.fecha_gestion = new Date();
 
-                var { data } = await $http.post(`/gestion/${gestion.data.c_contactactivity_id}/nueva`, data);
-                console.log(data);
-                alert(data)
-                
-            } catch (e) { console.log(e); alert ("error, crear gestion"); }     
+            $scope.gestion_actual = actual_gestion.descripcion
+
+            $scope.cancelar = () => {
+                $scope.tipo_actividad = null;
+                $scope.fecha_gestion = null;
+                $scope.gestion = null;
+                $scope.next_activity = null;
+                $scope.next_activity_date = null;
+
+                $("#siguiente_gestion_modal").modal('hide')
+            }
+
+            $scope.crearGestion = async function (tipo_actividad, fecha, descripcion, siguiente_ac, f_siguiente_ac) {
+                try {                
+                    var params = {
+                        tipo_actividad, 
+                        fecha: moment(fecha).format('YYYY-MM-DD'), 
+                        descripcion, 
+                        siguiente_ac, 
+                        f_siguiente_ac: moment(f_siguiente_ac).format('YYYY-MM-DD') 
+                    }
+
+                    var { data } = await $http.post(`/gestion/${actual_gestion.c_contactactivity_id}/nueva`, params);
+                    console.log(data);
+                    alert(data)
+
+                    $scope.tipo_actividad = null;
+                    $scope.fecha_gestion = null;
+                    $scope.gestion = null;
+                    $scope.next_activity = null;
+                    $scope.next_activity_date = null;
+
+                    $("#siguiente_gestion_modal").modal('hide')
+                    
+                } catch (e) { console.log(e); alert ("error, crear gestion"); }   
+            }
+
+            console.log(actual_gestion);
         }
 
-        console.log(gestion.data);
+        
 
     }])
     .controller('agenda_hoy', ["$scope", function($scope){
@@ -255,7 +280,8 @@ function cargarSolicitudes(data) {
 }
 
 function sgtGestion(data) {
-    EventBus.dispatch('newState', 'crear_gestion', leer(data))
+    //$("#siguiente_gestion_modal").modal('show')
+    EventBus.dispatch('crear_gestion_event', null, leer(data))
 }
 
 async function cargarTabla (id, url, arrColumnas) {
