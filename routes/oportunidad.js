@@ -29,7 +29,7 @@ router.get('/oportunidad', login.validarSesion, async function (req, res, next) 
             and op.isactive = 'Y'
             and ss.Name != 'Orden'
             and op.foportunidad <= date(now())
-            order by op.SalesRep_ID`;
+            order by op.foportunidad desc, op.SalesRep_ID`;
   
         var data = await pool.query(query);
 

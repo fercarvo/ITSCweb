@@ -5,13 +5,13 @@ angular.module('app', ['ui.router'])
                 templateUrl: '/views/oportunidad/head.html',
                 controller: 'oportunidad'
             })*/
-            .state('oportunidad_listar', {
+            .state('oportunidad', {
                 templateUrl: '/views/oportunidad/listar.html',
-                controller: 'oportunidad_listar'
+                controller: 'oportunidad'
             }) 
-            .state('oportunidad_actividad', {
+            .state('oportunidad.actividad', {
                 templateUrl: '/views/oportunidad/actividad.html',
-                controller: 'oportunidad_actividad'
+                controller: 'oportunidad.actividad'
             })
             .state('oportunidad_solicitudes', {
                 templateUrl: '/views/oportunidad/solicitudes.html',
@@ -72,7 +72,7 @@ angular.module('app', ['ui.router'])
             }
         }
     }])
-    .controller("oportunidad_listar", ["$scope", "$state", "$compile", "$scope", function($scope, $state, $compile, $scope){
+    .controller("oportunidad", ["$scope", "$state", "$compile", "$scope", function($scope, $state, $compile, $scope){
         console.log("Hola oportunidad")
 
          cargarTabla('oportunidades', '/oportunidad', [
@@ -84,27 +84,31 @@ angular.module('app', ['ui.router'])
             {name: 'etapaventa', alias: 'Etapa Venta'},
             {name: 'fechacierre', alias: 'Fecha Cierre'},
             {name: 'comentario', alias: 'Comentario'},
-            {alias: 'Actividades', cb: data => `<button class="btn" onclick="boton_click(this)" data-itsc="${data}">Mostrar </button>`},
-            {alias: 'Solicitudes', cb: data => `<button class="btn" onclick="cargarSolicitudes('${data}')">Mostrar </button>`}
+            {alias: 'Actividades', cb: data => `<button class="btn boton-itsc" onclick="boton_click(this)" data-itsc="${data}">Mostrar </button>`},
+            {alias: 'Solicitudes', cb: data => `<button class="btn boton-itsc" onclick="cargarSolicitudes('${data}')">Mostrar </button>`}
         ])
 
 
 
     }])
-    .controller("oportunidad_actividad", ["$scope", "$state", "oportunidad", function($scope, $state, op){
-        if (op.data && op.data.c_opportunity_id) {
-            cargarTabla('actividades', `/oportunidad/${op.data.c_opportunity_id}/actividades`, [
-                {name: 'tipoactividad', alias: 'Tipo Actividad'},
-                {name: 'fechainicio', alias: 'Fecha Inicio'},
-                {name: 'descripcion', alias: 'Descripciòn'},              
-                {name: 'siguiente_name', alias: 'Tipo Siguiente'},
-                {name: 'siguiente_fecha', alias: 'Fecha Siguiente'},
-                {name: 'estado', alias: 'Estado'},
-                {name: 'usuario', alias: 'Usuario'}
-            ])
-        } else {
+    .controller("oportunidad.actividad", ["$scope", "$state", "oportunidad", function($scope, $state, op){
+        
+        $("#oportunidad_actividad_modal").modal('show')
 
+        $scope.cerrar = function () {
+            $("#oportunidad_actividad_modal").modal('hide')
+            $state.go("oportunidad")
         }
+
+        cargarTabla('actividades', `/oportunidad/${op.data.c_opportunity_id}/actividades`, [
+            {name: 'tipoactividad', alias: 'Tipo Actividad'},
+            {name: 'fechainicio', alias: 'Fecha Inicio'},
+            {name: 'descripcion', alias: 'Descripciòn'},              
+            {name: 'siguiente_name', alias: 'Tipo Siguiente'},
+            {name: 'siguiente_fecha', alias: 'Fecha Siguiente'},
+            {name: 'estado', alias: 'Estado'},
+            {name: 'usuario', alias: 'Usuario'}
+        ])
     }])
     .controller("oportunidad_solicitudes", ["$scope", "$state", "oportunidad", function($scope, $state, op){
         
@@ -136,7 +140,7 @@ angular.module('app', ['ui.router'])
             {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
             {name: 'siguiente_name', alias: 'Tipo'},                      
             {name: 'usuario', alias: 'Usuario'},
-            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
+            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn boton-itsc" onclick="sgtGestion('${data}')">Crear </button>`}  
         ])
 
     }])
@@ -154,7 +158,7 @@ angular.module('app', ['ui.router'])
             {name: 'siguiente_fecha', alias: 'Siguiente Gestión'},
             {name: 'siguiente_name', alias: 'Tipo'},                      
             {name: 'usuario', alias: 'Usuario'},
-            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
+            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn boton-itsc" onclick="sgtGestion('${data}')">Crear </button>`}  
         ])
 
     }])
@@ -253,7 +257,7 @@ angular.module('app', ['ui.router'])
             {name: 'fechainicio', alias: 'Fecha'},
             {name: 'descripcion', alias: 'Descripciòn'},
             {name: 'usuario', alias: 'Usuario'},
-            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
+            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn boton-itsc" onclick="sgtGestion('${data}')">Crear </button>`}  
         ])
 
     }])
@@ -268,7 +272,7 @@ angular.module('app', ['ui.router'])
             {name: 'fechainicio', alias: 'Fecha'},
             {name: 'descripcion', alias: 'Descripciòn'},
             {name: 'usuario', alias: 'Usuario'},
-            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn" onclick="sgtGestion('${data}')">Crear </button>`}  
+            {alias: 'Crear Siguiente Gestión', cb: data => `<button class="btn boton-itsc" onclick="sgtGestion('${data}')">Crear </button>`}  
         ])
 
     }])
@@ -325,7 +329,7 @@ async function loadTemplates($state, goState, $http, $templateCache) {
 
 function boton_click(element) {
     var data = leer(element.getAttribute('data-itsc'))
-    EventBus.dispatch('newState', 'oportunidad_actividad', data)
+    EventBus.dispatch('newState', 'oportunidad.actividad', data)
 }
 
 function cargarSolicitudes(data) {
