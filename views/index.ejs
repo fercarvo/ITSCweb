@@ -35,6 +35,19 @@
     .bg-dark {
         background-color: #071625!important;
     }
+
+    body:-moz-full-screen {
+        background-color: #fff !important;
+    }
+    body:-webkit-full-screen {
+        background-color: #fff !important;
+    }
+    body:fullscreen {
+        background-color: #fff !important;
+    }
+    body:-ms-fullscreen {
+        background-color: #fff !important;
+    }
   </style>
 </head>
 
@@ -100,16 +113,18 @@
           </ul>
         </li>
 
-        <li class="nav-item" ui-sref-active="active" ui-sref="calendario" data-toggle="tooltip" data-placement="right" title="Calendarioo">
-          <a class="nav-link nav-link-collapse collapsed" ui-sref="calendario" data-toggle="collapse" href="#calendario_coll" data-parent="#exampleAccordion">
+        <li class="nav-item"  data-placement="right" ui-sref-active="active" ui-sref="calendario" data-toggle="tooltip" title="Calendarioo">
+          <a class="nav-link">
             <i class="fa fa-fw fa-calendar"></i>
             <span class="nav-link-text">Calendario</span>
           </a>
-          <ul onclick="fullscreen()" class="sidenav-second-level collapse" id="calendario_coll">
-            <li ui-sref-active-parent="active" ui-sref="calendario">
-              <a> <i class="fa fa-arrows-alt" aria-hidden="true"></i> Full Screen</a>
-            </li>
-          </ul>
+        </li>
+
+        <li class="nav-item" id="fullscreen" data-placement="right" data-toggle="tooltip" title="Full Screnn">
+          <a class="nav-link">
+            <i class="fa fa-fw fa-expand"></i>
+            <span class="nav-link-text">Full Screen</span>
+          </a>
         </li>
 
       </ul>
@@ -249,6 +264,47 @@
 <script src="/vendor/dataTables.responsive.min.js"></script>
 <script src="js/sb-admin.js"></script>
 <script src="/js/app.js"></script>
+<script>
+
+    //Soporte de full screen
+    document.getElementById('fullscreen').addEventListener('click', function (event){
+
+        if (document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled) {
+
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                //Actual: full screen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+
+                document.querySelector("#fullscreen i").className = 'fa fa-fw fa-expand'
+
+            } else {
+                //No esta en modo full screen
+                if (document.body.requestFullscreen) {
+                    document.body.requestFullscreen();
+                } else if (document.body.webkitRequestFullscreen) {
+                    document.body.webkitRequestFullscreen();
+                } else if (document.body.mozRequestFullScreen) {
+                    document.body.mozRequestFullScreen();
+                } else if (document.body.msRequestFullscreen) {
+                    document.body.msRequestFullscreen();
+                }
+
+                document.querySelector("#fullscreen i").className = 'fa fa-fw fa-compress'
+            }        
+
+        } else {
+            alert("Su navegador no soporta Full Screen")
+        }
+    }, false)
+</script>
 
 <script>
 

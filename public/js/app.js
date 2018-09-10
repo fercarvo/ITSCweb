@@ -435,20 +435,3 @@ function escribir( json ) {
 function leer( str ) {
     return JSON.parse( decodeURIComponent(escape(window.atob( str ))) )
 }
-
-function fullscreen() {
-    if (document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled) {
-        var iframe = document.getElementById("calendario");
-        if (iframe.requestFullscreen) {
-            iframe.requestFullscreen();
-        } else if (iframe.webkitRequestFullscreen) {
-            iframe.webkitRequestFullscreen();
-        } else if (iframe.mozRequestFullScreen) {
-            iframe.mozRequestFullScreen();
-        } else if (iframe.msRequestFullscreen) {
-            iframe.msRequestFullscreen();
-        }
-    } else {
-        alert("Su navegador no soporta Full Screen")
-    }
-}
