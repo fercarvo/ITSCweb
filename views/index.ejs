@@ -23,6 +23,9 @@
     .boton-itsc {
       background: #d6d6d6 !important;
     }
+    :-webkit-full-screen, :fullscreen, :-ms-fullscreen, :-moz-full-screen {
+        background: red;
+    }
   </style>
 </head>
 
@@ -88,11 +91,16 @@
           </ul>
         </li>
 
-        <li class="nav-item"  data-placement="right" ui-sref-active="active" ui-sref="calendario" title="Calendario">
-          <a class="nav-link">
-            <i class="fa fa-fw fa-calendar"></i>
+        <li class="nav-item" ui-sref-active="active" ui-sref="calendario" data-toggle="tooltip" data-placement="right" title="Calendarioo">
+          <a class="nav-link nav-link-collapse collapsed" ui-sref="calendario" data-toggle="collapse" href="#calendario_coll" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-users"></i>
             <span class="nav-link-text">Calendario</span>
           </a>
+          <ul onclick="fullscreen()" class="sidenav-second-level collapse" id="calendario_coll">
+            <li ui-sref-active-parent="active" ui-sref="calendario">
+              <a> <i class="fa fa-arrows-alt" aria-hidden="true"></i> Full Screen</a>
+            </li>
+          </ul>
         </li>
 
       </ul>

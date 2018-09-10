@@ -45,10 +45,10 @@ angular.module('app', ['ui.router'])
                 templateUrl: '/views/agendaequipo/7dias.html',
                 controller: 'agenda_equipo_7dias'
             })
-            .state('calendario', { //agenda_equipo
+            .state('calendario', { //fullscreen_calendario
                 templateUrl: '/views/calendario.html',
                 controller: 'calendario'
-            })              
+            })               
     }])
     .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
         EventBus.addEventListener("newState", cambiar)
@@ -434,4 +434,21 @@ function escribir( json ) {
 
 function leer( str ) {
     return JSON.parse( decodeURIComponent(escape(window.atob( str ))) )
+}
+
+function fullscreen() {
+    if (document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled) {
+        var iframe = document.getElementById("calendario");
+        if (iframe.requestFullscreen) {
+            iframe.requestFullscreen();
+        } else if (iframe.webkitRequestFullscreen) {
+            iframe.webkitRequestFullscreen();
+        } else if (iframe.mozRequestFullScreen) {
+            iframe.mozRequestFullScreen();
+        } else if (iframe.msRequestFullscreen) {
+            iframe.msRequestFullscreen();
+        }
+    } else {
+        alert("Su navegador no soporta Full Screen")
+    }
 }
