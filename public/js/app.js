@@ -44,7 +44,11 @@ angular.module('app', ['ui.router'])
             .state('agenda_equipo_7dias', { //agenda_equipo
                 templateUrl: '/views/agendaequipo/7dias.html',
                 controller: 'agenda_equipo_7dias'
-            })            
+            })
+            .state('calendario', { //agenda_equipo
+                templateUrl: '/views/calendario.html',
+                controller: 'calendario'
+            })              
     }])
     .run(["$state", "$http", "$templateCache", "oportunidad", function ($state, $http, $templateCache, op) {
         EventBus.addEventListener("newState", cambiar)
@@ -302,6 +306,34 @@ angular.module('app', ['ui.router'])
             {name: 'fechainicio', alias: 'Fecha'},
             {name: 'descripcion', alias: 'Descripciòn'}
         ])
+
+    }])
+    .controller("calendario", [function(){
+        console.log("calendario controller")
+
+        var iframe = document.getElementById("calendario");
+        //iframe.src = ""
+
+        iframe.onload = async function () {
+
+            try {
+                var data = await fetch("/calendario/eventos", {credentials: "same-origin"})
+
+                if (data.ok)
+                    data = await data.text();
+                else
+                    throw new Error(`Status: ${data.status}, ${data.statusText}`);
+
+                iframe.contentWindow.postMessage({
+                    refresh: true,
+                    eventos_calendario: JSON.parse(data)
+                }, "*")
+
+            } catch (e) {
+                console.log("Error load", e)
+                alert("Error cargar info calendario: " + e)
+            }
+        }
 
     }])
 

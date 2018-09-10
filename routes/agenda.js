@@ -9,6 +9,29 @@ router.use((req, res, next) => {
     next()
 })
 
+router.get("/calendario/eventos", login.validarSesion, async function (req, res, next) {
+    try {
+        var org = req.session_itsc.ad_org_id
+        var usuario = req.session_itsc.ad_user_id
+
+        var query = `
+        select
+            cal.S_ResourceAssignment_ID as id,
+            coalesce(cal.name, 'S/N') as title,
+            coalesce(cal.description, 'S/D') as description,
+            to_char(cal.assigndatefrom, 'yyyy-MM-dd"T"HH24:MI:SS') as start,
+            to_char(cal.assigndateto, 'yyyy-MM-dd"T"HH24:MI:SS') as end 
+        from S_ResourceAssignment cal
+        where cal.ad_org_id = ${Number(org)}`;
+    
+    var { rows } = await pool.query(query);
+    return res.json(rows);
+
+    } catch (e) {
+        next(e)
+    }
+})
+
 /**
  * Obtiene todas las actividades/agendas de un usuario
  */
