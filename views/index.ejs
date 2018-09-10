@@ -4,6 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- Chrome, Firefox OS and Opera -->
+  <meta name="theme-color" content="#071625">
+  <!-- Windows Phone -->
+  <meta name="msapplication-navbutton-color" content="#071625">
+  <!-- iOS Safari -->
+  <meta name="apple-mobile-web-app-status-bar-style" content="#071625">
+
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
@@ -23,8 +31,9 @@
     .boton-itsc {
       background: #d6d6d6 !important;
     }
-    :-webkit-full-screen, :fullscreen, :-ms-fullscreen, :-moz-full-screen {
-        background: red;
+
+    .bg-dark {
+        background-color: #071625!important;
     }
   </style>
 </head>
@@ -39,14 +48,14 @@
     <div class="collapse navbar-collapse" id="navbarResponsive">
       <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
 
-        <li class="nav-item"  data-placement="right" ui-sref-active="active" ui-sref="oportunidad" title="Oportunidades">
+        <li class="nav-item"  data-placement="right" ui-sref-active="active" ui-sref="oportunidad" data-toggle="tooltip" title="Oportunidades">
           <a class="nav-link">
             <i class="fa fa-fw fa-lightbulb-o"></i>
             <span class="nav-link-text">Oportunidades</span>
           </a>
         </li>
         
-        <li class="nav-item" ui-sref-active="active" data-toggle="tooltip" data-placement="right" title="Menu Levels">
+        <li class="nav-item" ui-sref-active="active" data-toggle="tooltip" data-placement="right" title="Gestiones Realizadas">
           <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#gestiones_coll" data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-check-circle"></i>
             <span class="nav-link-text">Gestiones Realizadas</span>
@@ -61,7 +70,7 @@
           </ul>
         </li>
 
-        <li class="nav-item" ui-sref-active="active" data-toggle="tooltip" data-placement="right" title="Menu Levels">
+        <li class="nav-item" ui-sref-active="active" data-toggle="tooltip" data-placement="right" title="Mi Agenda">
           <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#agenda_coll" data-parent="#exampleAccordion">
             <i class="fa fa-fw fa-list"></i>
             <span class="nav-link-text">Mi Agenda</span>
@@ -93,7 +102,7 @@
 
         <li class="nav-item" ui-sref-active="active" ui-sref="calendario" data-toggle="tooltip" data-placement="right" title="Calendarioo">
           <a class="nav-link nav-link-collapse collapsed" ui-sref="calendario" data-toggle="collapse" href="#calendario_coll" data-parent="#exampleAccordion">
-            <i class="fa fa-fw fa-users"></i>
+            <i class="fa fa-fw fa-calendar"></i>
             <span class="nav-link-text">Calendario</span>
           </a>
           <ul onclick="fullscreen()" class="sidenav-second-level collapse" id="calendario_coll">
