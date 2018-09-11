@@ -21,9 +21,14 @@ router.get("/calendario/eventos", login.validarSesion, async function (req, res,
             coalesce(cal.description, 'S/D') as description,
             to_char(cal.assigndatefrom, 'yyyy-MM-dd"T"HH24:MI:SS') as start,
             to_char(cal.assigndateto, 'yyyy-MM-dd"T"HH24:MI:SS') as end 
-        from S_ResourceAssignment cal
-        where cal.ad_org_id = ${Number(org)}`;
-    
+        from S_Resource re 
+        inner join S_ResourceAssignment cal on cal.isactive = 'Y' and cal.S_Resource_ID = re.S_Resource_ID       
+        where re.ad_org_id = ${Number(org)}
+            and re.AD_User_ID = ${Number(usuario)}
+            and re.isactive = 'Y'`;
+        
+        console.log(query);
+
     var { rows } = await pool.query(query);
     return res.json(rows);
 
