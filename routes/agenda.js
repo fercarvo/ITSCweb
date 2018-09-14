@@ -27,8 +27,6 @@ router.get("/calendario/eventos", login.validarSesion, async function (req, res,
             and re.AD_User_ID = ${Number(usuario)}
             and re.isactive = 'Y'`;
         
-        console.log(query);
-
     var { rows } = await pool.query(query);
     return res.json(rows);
 

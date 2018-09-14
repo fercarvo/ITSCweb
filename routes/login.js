@@ -42,10 +42,22 @@ router.post('/login', async function (req, res, next) {
         return res.redirect(`/login?msg=${encodeURIComponent('Por favor, envie datos correctos')}`);
 
     try {
+        if (req.body.seleccionar_rol === 'Y') { 
+            //Recordar datos ultimo login
+            var data = await checkUsuario(req.body.usuario, req.body.clave)
 
-        console.log(req.body.ultimo_login)
-
-        if (req.body.ultimo_login !== 'Y') {
+            if (data.length === 0) {
+                return res.redirect(`/login?msg=${encodeURIComponent('Usuario/Clave Incorrectos')}`) 
+            } else {
+                return res.render('rol', {
+                    usr: req.body.usuario,
+                    pass: req.body.clave,
+                    roles: encodeURIComponent( JSON.stringify(data) )
+                })
+            }
+            
+        } else {
+            //No recordar datos ultimo login
             var data_last_log = await getLastLogin(req.body.usuario, req.body.clave);
             
             if (data_last_log.length === 0) {
@@ -58,18 +70,6 @@ router.post('/login', async function (req, res, next) {
                 res.cookie('session_itsc', token,  { maxAge: 1000*60*60*12, httpOnly: true})
                 res.redirect('/')
             }
-        }
-
-        var data = await checkUsuario(req.body.usuario, req.body.clave)
-
-        if (data.length === 0) {
-            return res.redirect(`/login?msg=${encodeURIComponent('Usuario/Clave Incorrectos')}`) 
-        } else {
-            return res.render('rol', {
-                usr: req.body.usuario,
-                pass: req.body.clave,
-                roles: encodeURIComponent( JSON.stringify(data) )
-            })
         }
 
     } catch (e) {
