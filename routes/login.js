@@ -63,12 +63,21 @@ router.post('/login', async function (req, res, next) {
             if (data_last_log.length === 0) {
                 return res.redirect(`/login?msg=${encodeURIComponent('Usuario/Clave Incorrectos')}`);
             } else {
-                data_last_log = data_last_log[0]
-                var data_login = await createPayload(req.body.usuario, req.body.clave, data_last_log.ad_client_id, data_last_log.ad_role_id, data_last_log.ad_org_id)
-                var token = createToken(data_login)
+                var { ad_client_id, ad_role_id, ad_org_id } = data_last_log[0]
 
-                res.cookie('session_itsc', token,  { maxAge: 1000*60*60*12, httpOnly: true})
-                res.redirect('/')
+                if (Number(ad_org_id) === 0) {
+                    return res.render('rol', {
+                        usr: req.body.usuario,
+                        pass: req.body.clave,
+                        roles: encodeURIComponent( JSON.stringify(await checkUsuario(req.body.usuario, req.body.clave)) )
+                    })
+                } else {
+                    var data_login = await createPayload(req.body.usuario, req.body.clave, ad_client_id, ad_role_id, ad_org_id)
+                    var token = createToken(data_login)
+
+                    res.cookie('session_itsc', token,  { maxAge: 1000*60*60*12, httpOnly: true})
+                    res.redirect('/')
+                }                
             }
         }
 
