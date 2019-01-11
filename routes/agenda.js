@@ -84,7 +84,7 @@ async function getAgenda(org, dateTo, usuario, supervisor = false) {
         if (supervisor)
             return `and ac.createdby in (select AD_User_ID from AD_User where Supervisor_ID = (${usuario})::integer)`
         else
-            return `and ac.createdby = (${usuario})::integer`;
+            return `and ac.SalesRep_ID = (${usuario})::integer`;
     })()
 
     var filtro_dateto = (function (){
@@ -167,7 +167,7 @@ async function  getGestiones(org, datefrom, dateto, usuario) {
     where (${Number(org)})::numeric in (ac.ad_org_id, 0)
         and ac.isactive = 'Y'
         and date(ac.StartDate) between date('${datefrom}') and date('${dateto}')
-        and ac.createdby = (${usuario})::integer
+        and ac.SalesRep_ID = (${usuario})::integer
     order by fechainicio`;
 
     var data = await pool.query(query);    
